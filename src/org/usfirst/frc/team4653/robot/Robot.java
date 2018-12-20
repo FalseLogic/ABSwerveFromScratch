@@ -60,17 +60,19 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
-		oi.ahrs.reset();
+		driveTrain.resetDriveTrainEnc();
 	}
 
 	@Override
 	public void teleopPeriodic() {
-		Scheduler.getInstance().run();
+		//Scheduler.getInstance().run();
 		
 		//oi.button7.whenActive(new ForwardDrive());
 		//oi.button9.whenActive(new BackwardDrive());
 		//oi.button11.whenActive(new LeftDrive());
 		//oi.button12.whenActive(new RightDrive());
+		
+		/*
 		if(oi.stick.getRawButton(1)) {
 			if(oi.stick.getRawButton(5)) {
 				frontLeftT.set(ControlMode.PercentOutput, oi.stick.getY());
@@ -99,14 +101,22 @@ public class Robot extends TimedRobot {
 				backRight.set(ControlMode.PercentOutput, oi.stick.getY());
 			}
 		}
+		*/
+		
+		driveTrain.swerveStrafe(-oi.stick.getY(), oi.stick.getZ() * 90);
+		
 		//frontLeft.set(ControlMode.Velocity, oi.stick.getY() * 500);
 		//frontRight.set(ControlMode.PercentOutput, oi.stick.getY());
 		//backLeft.set(ControlMode.Velocity, oi.stick.getY() * 500);
 		//backRight.set(ControlMode.Velocity, oi.stick.getY() * 500);
 		
-		driveTrain.printDriveEnc();
+		if(oi.stick.getRawButtonPressed(2)) {
+			driveTrain.resetDriveTrainEnc();
+		}
 		
-		SmartDashboard.putNumber("stick Y", oi.stick.getY());
+		driveTrain.printSwervePos();
+		
+		SmartDashboard.putNumber("target angle?", oi.stick.getZ() * 90);
 	}
 	
 	@Override

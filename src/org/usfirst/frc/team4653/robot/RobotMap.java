@@ -20,12 +20,17 @@ public class RobotMap {
 	// public static int rightMotor = 2;
 	public static int FLdrive = 2,
 					  FLturn = 1,
-					  FRdrive = 4,
-					  FRturn = 3,
-					  BLdrive = 6,
-					  BLturn = 5,
+					  //FRdrive = 4,
+					  //FRturn = 3,
+					  //BLdrive = 6,
+					  //BLturn = 5,
 					  BRdrive = 8,
 					  BRturn = 7;
+	
+	public static int FRdrive = 9,
+	  FRturn = 9,
+	  BLdrive = 9,
+	  BLturn = 9;
 	
 	public static int stickPort = 0;
 	
