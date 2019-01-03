@@ -7,8 +7,6 @@
 
 package org.usfirst.frc.team4653.robot;
 
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -19,7 +17,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-	Joystick stick = new Joystick(RobotMap.stickPort);
+	Joystick stick = new Joystick(Constants.stickPort);
 	Button button1 = new JoystickButton(stick, 1),
 		   button2 = new JoystickButton(stick, 2),
 		   button3 = new JoystickButton(stick, 3),
@@ -33,8 +31,6 @@ public class OI {
 		   button11 = new JoystickButton(stick, 11),
 		   button12 = new JoystickButton(stick, 12);
 	
-	AHRS ahrs = new AHRS(SPI.Port.kMXP);
-
 	public double getStickX() {
 		return stick.getX();
 	}
@@ -44,10 +40,11 @@ public class OI {
 	public double getStickZ() {
 		return stick.getZ();
 	}
-	public double getAngle() {
-		return ahrs.getAngle();
-	}
 	
+	public double getStickAngle() {
+		double rads = Math.atan2(stick.getX(), -stick.getY());
+		return rads / Math.PI * 180;
+	}
 	
 	
 	//// CREATING BUTTONS
