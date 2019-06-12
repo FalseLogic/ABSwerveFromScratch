@@ -5,9 +5,6 @@ import org.usfirst.frc.team4653.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-/**
- *
- */
 public class Drive extends Command {
 	
 	private double targetAngle;
