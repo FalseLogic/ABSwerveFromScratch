@@ -17,27 +17,21 @@ public class AutoDrive extends Command {
 	private double speed = .5;
 
 	/**
-	 * 
 	 * @param angle angle in degrees to point wheels towards. forward is 0.
 	 * @param distance units are encoder ticks. please don't try negative distance
 	 */
 	public AutoDrive(double angle, double distance) {
-		// Use requires() here to declare subsystem dependencies
-		// eg. requires(chassis);
 		requires(Robot.driveTrain);
 		this.angle = angle;
 		this.startPos = Robot.driveTrain.averageDrivePosition();
 		this.targetPos = startPos + distance;
-		
 	}
 	
 
-	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() {
 	}
 
-	// Called repeatedly when this Command is scheduled to run
 	@Override
 	protected void execute() {
 		Robot.driveTrain.crabDrive(angle, speed);
@@ -57,13 +51,10 @@ public class AutoDrive extends Command {
 		
 	}
 
-	// Called once after isFinished returns true
 	@Override
 	protected void end() {
 	}
 
-	// Called when another command which requires one or more of the same
-	// subsystems is scheduled to run
 	@Override
 	protected void interrupted() {
 	}

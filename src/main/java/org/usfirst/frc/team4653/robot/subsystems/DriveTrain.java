@@ -3,10 +3,8 @@ package org.usfirst.frc.team4653.robot.subsystems;
 import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
 import org.usfirst.frc.team4653.robot.Constants.ModuleLocation;
-import org.usfirst.frc.team4653.robot.commands.CrabDrive;
 import org.usfirst.frc.team4653.robot.swerveutil.SwerveModule;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class DriveTrain extends Subsystem {
