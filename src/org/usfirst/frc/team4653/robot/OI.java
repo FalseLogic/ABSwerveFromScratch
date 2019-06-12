@@ -7,6 +7,8 @@
 
 package org.usfirst.frc.team4653.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -17,8 +19,11 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-	Joystick stick = new Joystick(Constants.stickPort);
-	Button button1 = new JoystickButton(stick, 1),
+
+	private AHRS ahrs = new AHRS(SPI.Port.kMXP);
+
+	public Joystick stick = new Joystick(Constants.stickPort);
+	public Button button1 = new JoystickButton(stick, 1),
 		   button2 = new JoystickButton(stick, 2),
 		   button3 = new JoystickButton(stick, 3),
 		   button4 = new JoystickButton(stick, 4),
@@ -30,7 +35,15 @@ public class OI {
 		   button10 = new JoystickButton(stick, 10),
 		   button11 = new JoystickButton(stick, 11),
 		   button12 = new JoystickButton(stick, 12);
-	
+
+	public double getGyroDegrees() {
+		return ahrs.getAngle();
+	}
+
+	public void resetGyro() {
+		ahrs.reset();
+	}
+
 	public double getStickX() {
 		return stick.getX();
 	}
@@ -41,10 +54,30 @@ public class OI {
 		return stick.getZ();
 	}
 	
+	private double lastStickAngle;
 	public double getStickAngle() {
 		double rads = Math.atan2(stick.getX(), -stick.getY());
-		return rads / Math.PI * 180;
+		
+		if(this.getStickMagnitude() < .1) {
+			return lastStickAngle;
+		}
+		else {
+			lastStickAngle = rads / Math.PI * 180;
+			return rads / Math.PI * 180;	
+		}
+		
+
 	}
+
+	public double getStickMagnitude() {
+		if(Math.abs(stick.getY()) > Math.abs(stick.getX())) {
+			return Math.abs(stick.getY());
+		}
+		else {
+			return Math.abs(stick.getX());
+		}
+	}
+	
 	
 	
 	//// CREATING BUTTONS
