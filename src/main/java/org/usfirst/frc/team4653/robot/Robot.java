@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Robot extends TimedRobot {
 	
-	
 	public static OI oi;
 	public static DriveTrain driveTrain;
 	TalonSRX frontLeft = new TalonSRX(Constants.FLdrive);
@@ -119,4 +118,5 @@ public class Robot extends TimedRobot {
 	public void disabledInit() {
 		Scheduler.getInstance().removeAll();
 	}
+
 }

@@ -15,5 +15,6 @@ public class SRXOutput implements PIDOutput {
 
     public void pidWrite(double output) {
         talon.set(ControlMode.PercentOutput, output);
-    }
+	}
+	
 }

@@ -5,12 +5,12 @@ import org.usfirst.frc.team4653.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-public class Drive extends Command {
+public class OldCrabDrive extends Command {
 	
 	private double targetAngle;
 	private double power;
 	
-    public Drive() {
+    public OldCrabDrive() {
     	requires(Robot.driveTrain);
     }
 
@@ -42,5 +42,6 @@ public class Drive extends Command {
     }
 
     protected void interrupted() {
-    }
+	}
+	
 }

@@ -140,4 +140,5 @@ public class SwerveModule {
 	public boolean isInverted() {
 		return isReversed;
 	}
+	
 }
