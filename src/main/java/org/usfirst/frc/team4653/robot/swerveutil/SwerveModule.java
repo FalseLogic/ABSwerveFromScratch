@@ -3,6 +3,8 @@ package org.usfirst.frc.team4653.robot.swerveutil;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.usfirst.frc.team4653.robot.Constants;
 
@@ -12,7 +14,7 @@ import edu.wpi.first.wpilibj.PIDController;
 public class SwerveModule {
 
 	private TalonSRX mTurn;
-	private TalonSRX mDrive;
+	private CANSparkMax mDrive;
 
 	private PIDController pidController;
 	private SRXQuadEncoder kInput;
@@ -32,7 +34,7 @@ public class SwerveModule {
      */
 	public SwerveModule(int turnID, int driveID, double offset, boolean isReversed) {
 		mTurn = new TalonSRX(turnID);
-		mDrive = new TalonSRX(driveID);
+		mDrive = new CANSparkMax(driveID, MotorType.kBrushless);
 		this.offset = offset;
 		this.isReversed = isReversed;
 		
@@ -46,10 +48,6 @@ public class SwerveModule {
 		pidController.enable();
 
 		mTurn.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-		mDrive.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-		
-		mDrive.config_kF(Constants.kPIDLoopIdx, 1.6, Constants.kTimeoutMs);
-		mDrive.config_kP(Constants.kPIDLoopIdx, 1.75, Constants.kTimeoutMs);
 	}
 	
 
@@ -86,12 +84,10 @@ public class SwerveModule {
 	
 	public void spinWheel(double speed) {
 		if(isReversed) {
-			mDrive.set(ControlMode.PercentOutput, -speed);
-			//mDrive.set(ControlMode.Velocity, speed * -600);
+			mDrive.set(-speed);
 		}
 		else {
-			mDrive.set(ControlMode.PercentOutput, speed);
-			//mDrive.set(ControlMode.Velocity, speed * 600);
+			mDrive.set(speed);
 		}		
 	}
 	public void setModule(double targetAngle, double speed) {
@@ -120,17 +116,18 @@ public class SwerveModule {
 		return getTurnAdjPosition() / fullRot * 360;
 	}
 
+	double driveEncOffset;
 	public double getDriveRawPosition() {
-		return mDrive.getSensorCollection().getQuadraturePosition();
+		return mDrive.getEncoder().getPosition() - driveEncOffset;
 	}
 	public double getDriveVelocity() {
-		return mDrive.getSensorCollection().getQuadratureVelocity();
+		return mDrive.getEncoder().getVelocity();
 	}
 	public void resetTurnEncoder() {
 		mTurn.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 	}
 	public void resetDriveEncoder() {
-		mDrive.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		driveEncOffset = mDrive.getEncoder().getPosition();
 	}
 	
 	public void setPIDF(double kP, double kI, double kD, double kF) {
