@@ -2,14 +2,14 @@ package org.usfirst.frc.team4653.robot;
 
 public class Constants {
 	
-	public static final int FLdrive = 2,
-			  FLturn = 1,
-			  FRdrive = 4,
-			  FRturn = 3,
-			  BLdrive = 6,
-			  BLturn = 5,
-			  BRdrive = 8,
-			  BRturn = 7;
+	public static final int FLdrive = 1,
+			  FLturn = 5,
+			  FRdrive = 2,
+			  FRturn = 6,
+			  BLdrive = 3,
+			  BLturn = 7,
+			  BRdrive = 4,
+			  BRturn = 8;
 	
 	public static final int FLoffset = 0,
 			  FRoffset = 0,
@@ -17,6 +17,7 @@ public class Constants {
 			  BRoffset = 0;
 
 	public static final int stickPort = 0,
+			xboxPort = 1,
 			kTimeoutMs = 10,
 			kPIDLoopIdx = 0;
 	
@@ -27,7 +28,9 @@ public class Constants {
 
 	public static final double kWheelbase = 19.0,
 			kTrackwidth = 27.0,
-			kTurnRadius = Math.hypot(kWheelbase, kTrackwidth);	
+			kTurnRadius = Math.hypot(kWheelbase, kTrackwidth);
+			
+	public static final boolean modulePIDControl = false;
 
 	//public static final double kP = 0.0046,
 	//		kI = 0.000025,

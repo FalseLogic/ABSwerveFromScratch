@@ -24,7 +24,7 @@ public class SwerveModule {
 	private boolean isReversed;	
 	private double offset, targetAngle;
 
-	private boolean PIDcontrol = true;
+	private boolean PIDcontrol = Constants.modulePIDControl;
 
 	/**
      * @param turnID   		the ID of the turn motor

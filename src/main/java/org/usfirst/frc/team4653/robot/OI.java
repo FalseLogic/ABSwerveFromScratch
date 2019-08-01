@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
@@ -12,6 +13,8 @@ public class OI {
 	private AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	public Joystick stick = new Joystick(Constants.stickPort);
+	public XboxController xbox = new XboxController(Constants.xboxPort);
+
 	public Button button1 = new JoystickButton(stick, 1),
 		   button2 = new JoystickButton(stick, 2),
 		   button3 = new JoystickButton(stick, 3),
