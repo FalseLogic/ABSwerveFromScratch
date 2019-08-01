@@ -8,18 +8,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.usfirst.frc.team4653.robot.Constants;
 
-import edu.wpi.first.wpilibj.PIDController;
-
 
 public class SwerveModule {
 
 	private TalonSRX mTurn;
 	private CANSparkMax mDrive;
-
-	private PIDController pidController;
-	private SRXQuadEncoder kInput;
-	private SRXOutput kOutput;
-
 
 	private boolean isReversed;	
 	private double offset, targetAngle;
@@ -37,20 +30,10 @@ public class SwerveModule {
 		mDrive = new CANSparkMax(driveID, MotorType.kBrushless);
 		this.offset = offset;
 		this.isReversed = isReversed;
-		
-		kInput = new SRXQuadEncoder(mTurn);
-		kOutput = new SRXOutput(mTurn);
-		
-		pidController = new PIDController(Constants.kP, Constants.kI, Constants.kD, Constants.kF, kInput, kOutput, .05);
-		pidController.setInputRange(-180, 180);
-		pidController.setContinuous();
-		pidController.setOutputRange(-1.0, 1.0);
-		pidController.enable();
 
 		mTurn.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 	}
 	
-
 	public void turnMotorControl(double targetAngle) {
 
 		this.targetAngle = targetAngle;
@@ -61,12 +44,10 @@ public class SwerveModule {
 		
 		
 		if(PIDcontrol) {
-			pidController.enable();
-			pidController.setSetpoint(targetAngle);
+
 		}
 		else {
-			pidController.disable();
-			turnAdjEncoder =  mTurn.getSelectedSensorPosition(Constants.kTimeoutMs) - offset;
+			turnAdjEncoder =  getTurnRawPosition() - offset;
 			amtOff = turnAdjEncoder - targetPos;
 			
 			turnMotorPower = (-amtOff/fullRot) + Math.floor((amtOff + (fullRot / 2)) / fullRot);
@@ -100,7 +81,7 @@ public class SwerveModule {
 	}
 
 	public double getTurnAdjPosition() {
-		return  mTurn.getSelectedSensorPosition(Constants.kTimeoutMs) - offset;
+		return getTurnRawPosition() - offset;
 	}
 
 	public double getTurnErrorDegrees() {
@@ -131,7 +112,6 @@ public class SwerveModule {
 	}
 	
 	public void setPIDF(double kP, double kI, double kD, double kF) {
-		pidController.setPID(kP, kI, kD, kF);
 	}
 
 	public boolean isInverted() {

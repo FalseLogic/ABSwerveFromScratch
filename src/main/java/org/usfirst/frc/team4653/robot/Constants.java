@@ -30,7 +30,7 @@ public class Constants {
 			kTrackwidth = 27.0,
 			kTurnRadius = Math.hypot(kWheelbase, kTrackwidth);
 			
-	public static final boolean modulePIDControl = false;
+	public static final boolean modulePIDControl = true;
 
 	//public static final double kP = 0.0046,
 	//		kI = 0.000025,
