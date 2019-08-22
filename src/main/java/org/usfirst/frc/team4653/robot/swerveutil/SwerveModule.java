@@ -5,11 +5,14 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.usfirst.frc.team4653.robot.Constants;
+import org.usfirst.frc.team4653.robot.swerveutil.SwerveMath;
 
 import edu.wpi.first.wpilibj.PIDController;
 
 
 public class SwerveModule {
+
+	private SwerveMath swerveMath;
 
 	private TalonSRX mTurn;
 	private TalonSRX mDrive;
@@ -24,11 +27,13 @@ public class SwerveModule {
 
 	private boolean PIDcontrol = true;
 
+	double fullRot = 4096 / 1.2;
+
 	/**
      * @param turnID   		the ID of the turn motor
      * @param driveID       the ID of the drive motor
      * @param isReversed    if the module is physically reversed on the robot
-     * @param offset	encoder value when wheel is pointing stright
+     * @param offset		encoder value when wheel is pointing stright
      */
 	public SwerveModule(int turnID, int driveID, double offset, boolean isReversed) {
 		mTurn = new TalonSRX(turnID);
@@ -57,12 +62,11 @@ public class SwerveModule {
 
 		this.targetAngle = targetAngle;
 
-		double amtOff, fullRot, targetPos, turnAdjEncoder, turnMotorPower;
-		fullRot = 4096 / 1.2;
-		targetPos = (targetAngle * fullRot / 360);
+		double amtOff, targetPos, turnMotorPower;
 		
 		
 		if(PIDcontrol) {
+<<<<<<< Updated upstream
 			pidController.enable();
 			pidController.setSetpoint(targetAngle);
 		}
@@ -70,6 +74,28 @@ public class SwerveModule {
 			pidController.disable();
 			turnAdjEncoder =  mTurn.getSelectedSensorPosition(Constants.kTimeoutMs) - offset;
 			amtOff = turnAdjEncoder - targetPos;
+=======
+			double c, t;
+			//find most efficient direction
+			c = swerveMath.normalizeAngle(getTurnRawDegrees());
+			t = targetAngle;
+			if(Math.abs(c - t) > 180) {
+				if(c - t > 0) {
+					t += 360;
+				}
+				else {
+					t -= 360;
+				}
+			}
+			//translate to ticks
+			targetPos = t * fullRot / 360;
+			mTurn.set(ControlMode.Position, targetPos);
+
+		}
+		else {
+			targetPos = (targetAngle * fullRot / 360);
+			amtOff = getTurnAdjPosition() - targetPos;
+>>>>>>> Stashed changes
 			
 			turnMotorPower = (-amtOff/fullRot) + Math.floor((amtOff + (fullRot / 2)) / fullRot);
 			
@@ -94,6 +120,7 @@ public class SwerveModule {
 			//mDrive.set(ControlMode.Velocity, speed * 600);
 		}		
 	}
+
 	public void setModule(double targetAngle, double speed) {
 		turnMotorControl(targetAngle);
 		spinWheel(speed);
@@ -107,16 +134,15 @@ public class SwerveModule {
 		return  mTurn.getSelectedSensorPosition(Constants.kTimeoutMs) - offset;
 	}
 
-	public double getTurnErrorDegrees() {
-		return getTurnDegrees() - targetAngle;
-	}
+	//public double getTurnErrorDegrees() {
+	//	return getTurnRawDegrees() - targetAngle;
+	//}
 
 	public double getTurnVelocity() {
 		return mTurn.getSensorCollection().getQuadratureVelocity();
 	}
 
-	public double getTurnDegrees() {
-		double fullRot = 4096 / 1.2;
+	public double getTurnRawDegrees() {
 		return getTurnAdjPosition() / fullRot * 360;
 	}
 
