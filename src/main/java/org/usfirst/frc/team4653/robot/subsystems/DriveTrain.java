@@ -2,7 +2,8 @@ package org.usfirst.frc.team4653.robot.subsystems;
 
 import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
-import org.usfirst.frc.team4653.robot.Constants.ModuleLocation;
+import org.usfirst.frc.team4653.robot.Constants.Location;
+import org.usfirst.frc.team4653.robot.commands.CrabDrive;
 import org.usfirst.frc.team4653.robot.swerveutil.SwerveModule;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -14,7 +15,7 @@ public class DriveTrain extends Subsystem {
 	private SwerveModule modBackLeft = new SwerveModule(Constants.BLturn, Constants.BLdrive, Constants.BLoffset, false);
 	private SwerveModule modBackRight = new SwerveModule(Constants.BRturn, Constants.BRdrive, Constants.BRoffset, true);
 	
-	public void setModule(ModuleLocation location, double targetAngle, double power) {
+	public void setModule(Location location, double targetAngle, double power) {
 		switch(location) {
 			case FRONT_LEFT:
 				modFrontLeft.setModule(targetAngle, power);
@@ -27,7 +28,7 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 	
-	public SwerveModule getSwerveModule(ModuleLocation location) {
+	public SwerveModule getSwerveModule(Location location) {
 		switch(location) {
 			default:
 				return null;
@@ -58,31 +59,17 @@ public class DriveTrain extends Subsystem {
 	}
 	
 	public void crabDrive(double angle, double speed) {
-		//if(Robot.oi.stick.getRawButton(2)) {
-		//	this.setAllAngle(0);
-		//	modFrontLeft.spinWheel(Robot.oi.getStickZ());
-		//	modFrontRight.spinWheel(-Robot.oi.getStickZ());
-		//	modBackLeft.spinWheel(Robot.oi.getStickZ());
-		//	modBackRight.spinWheel(-Robot.oi.getStickZ());
-		//}
-		//else {
-			setAllAngle(angle);
-			setAllSpeed(speed);
-		//}
-		
+		setAllAngle(angle);
+		setAllSpeed(speed);
 	}
 
 	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed) {
-		swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, false, true);
+		swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, false);
 	}
 
-	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed, boolean isFieldOriented, boolean canRotate) {
+	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed, boolean isFieldOriented) {
 
 		double gyroAngle = Robot.oi.getGyroDegrees();
-
-		if(!canRotate) {
-			rotateSpeed = 0;
-		}
 
 		double sin = Math.sin(Math.toRadians(gyroAngle));
 		double cos = Math.cos(Math.toRadians(gyroAngle));
@@ -199,7 +186,7 @@ public class DriveTrain extends Subsystem {
 	}
 
     public void initDefaultCommand() {
-		//setDefaultCommand(new CrabDrive());
+		setDefaultCommand(new CrabDrive());
 	}
 	
 }

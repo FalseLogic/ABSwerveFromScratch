@@ -31,24 +31,20 @@ public class OI {
 		return stick.getZ();
 	}
 	
-	private double lastStickAngle, rads, degrees;
 	public double getStickAngle() {
-		rads = Math.atan2(stick.getX(), -stick.getY());
-		degrees = Math.toDegrees(rads);
-		
-		if(this.getStickMagnitude() < .1) {
-			return lastStickAngle;
-		}
-		else {
-			lastStickAngle = degrees;
-			return degrees;	
-		}
-		
-
+		double rads = Math.atan2(stick.getX(), -stick.getY());
+		return Math.toDegrees(rads);
 	}
 
 	public double getStickMagnitude() {
-		return Math.hypot(stick.getX(), stick.getY());
+		double mag = Math.hypot(stick.getX(), stick.getY());
+
+		if(Math.abs(mag) > .05) {
+			return mag;
+		} 
+		else {
+			return 0;
+		}
 	}
 	
 }

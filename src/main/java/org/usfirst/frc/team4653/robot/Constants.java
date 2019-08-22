@@ -21,7 +21,7 @@ public class Constants {
 			kTimeoutMs = 10,
 			kPIDLoopIdx = 0;
 	
-	public static final double kP = .000146484375,
+	public static final double kP = 1.312,
 			kI = 0,
 			kD = 0, 
 			kF = 0;
@@ -32,12 +32,7 @@ public class Constants {
 			
 	public static final boolean modulePIDControl = true;
 
-	//public static final double kP = 0.0046,
-	//		kI = 0.000025,
-	//		kD = 0,
-	//		kF = 0;
-	
-	public enum ModuleLocation {
+	public enum Location {
         FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT;
 	}
 	

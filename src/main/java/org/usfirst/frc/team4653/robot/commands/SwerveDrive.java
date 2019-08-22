@@ -27,7 +27,7 @@ public class SwerveDrive extends Command {
         double forwardSpeed = -Robot.oi.getStickY();
 		double strafeSpeed = Robot.oi.getStickX();
 		double rotateSpeed = .85 * Robot.oi.getStickZ();
-    	Robot.driveTrain.swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, isFieldOriented, canRotate);
+    	Robot.driveTrain.swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, isFieldOriented);
     }
 
     protected boolean isFinished() {
@@ -38,10 +38,6 @@ public class SwerveDrive extends Command {
     }
 
     protected void interrupted() {
-        //Robot.driveTrain.getSwerveModule(ModuleLocation.FRONT_LEFT).PIDloop.stop();
-        //Robot.driveTrain.getSwerveModule(ModuleLocation.FRONT_RIGHT).PIDloop.stop();
-        //Robot.driveTrain.getSwerveModule(ModuleLocation.BACK_LEFT).PIDloop.stop();
-        //Robot.driveTrain.getSwerveModule(ModuleLocation.BACK_RIGHT).PIDloop.stop();
 	}
 	
 }

@@ -12,8 +12,8 @@ public class SwerveModule {
 
 	private SwerveMath swerveMath;
 
-	private TalonSRX mTurn;
-	private TalonSRX mDrive;
+	public TalonSRX mTurn;
+	public TalonSRX mDrive;
 
 	private boolean isReversed;	
 	private double offset;
@@ -44,28 +44,27 @@ public class SwerveModule {
 
 	public void turnMotorControl(double targetAngle) {
 
-		double amtOff, targetPos, turnMotorPower;
-		
 		
 		if(PIDcontrol) {
-			double c, t;
+			double target, currentAngle;
 			//find most efficient direction
-			c = swerveMath.normalizeAngle(getTurnRawDegrees());
-			t = targetAngle;
-			if(Math.abs(c - t) > 180) {
-				if(c - t > 0) {
-					t += 360;
+			currentAngle = swerveMath.normalizeAngle(getTurnRawDegrees());
+			if(Math.abs(currentAngle - targetAngle) > 180) {
+				if(currentAngle - targetAngle > 0) {
+					targetAngle += 360;
 				}
 				else {
-					t -= 360;
+					targetAngle -= 360;
 				}
 			}
 			//translate to ticks
-			targetPos = t * fullRot / 360;
-			mTurn.set(ControlMode.Position, targetPos);
+			target = targetAngle * fullRot / 360;
+			mTurn.set(ControlMode.Position, target);
 
 		}
 		else {
+			double turnMotorPower, amtOff, targetPos;
+
 			targetPos = (targetAngle * fullRot / 360);
 			amtOff = getTurnAdjPosition() - targetPos;
 			
@@ -132,6 +131,10 @@ public class SwerveModule {
 	}
 	
 	public void setPIDF(double kP, double kI, double kD, double kF) {
+		mTurn.config_kP(Constants.kPIDLoopIdx, kP, Constants.kTimeoutMs);
+		mTurn.config_kI(Constants.kPIDLoopIdx, kI, Constants.kTimeoutMs);
+		mTurn.config_kD(Constants.kPIDLoopIdx, kD, Constants.kTimeoutMs);
+		mTurn.config_kF(Constants.kPIDLoopIdx, kF, Constants.kTimeoutMs);
 	}
 
 	public boolean isInverted() {
