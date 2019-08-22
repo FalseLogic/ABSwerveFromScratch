@@ -3,11 +3,9 @@ package org.usfirst.frc.team4653.robot;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4653.robot.subsystems.DriveTrain;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Robot extends TimedRobot {
@@ -55,13 +53,13 @@ public class Robot extends TimedRobot {
 
 		Scheduler.getInstance().run();
 
-		//if(oi.stick.getRawButton(1)) {
-		//	driveTrain.swerveDrive(true, true);
-		//}
-		//else {
-		//	driveTrain.swerveDrive(true, false);
-		//}
+		if(oi.stick.getRawButton(1)) {
+			driveTrain.crabDrive(oi.getStickAngle(), oi.getStickMagnitude());
+		}
 
+		driveTrain.printAdjTurnEnc();
+
+		/*
 		if(oi.stick.getRawButtonPressed(11)) {
 			driveTrain.resetDriveEncoders();
 			driveTrain.resetTurnEncoders();
@@ -107,11 +105,13 @@ public class Robot extends TimedRobot {
 		
 		SmartDashboard.putNumber("target angle?", oi.getStickAngle());
 		SmartDashboard.putNumber("stick magnitude", oi.getStickMagnitude());
-
+		
 		SmartDashboard.putNumber("stick X", oi.getStickX());
 		SmartDashboard.putNumber("stick Y", oi.getStickY());
 		SmartDashboard.putNumber("stick Z", oi.getStickZ());
 		SmartDashboard.putNumber("gyro angle", oi.getGyroDegrees());
+		*/
+		
 	}
 	
 	@Override
