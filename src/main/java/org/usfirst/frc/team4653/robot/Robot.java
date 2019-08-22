@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("stick Z", oi.getStickZ());
 		SmartDashboard.putNumber("gyro angle", oi.getGyroDegrees());
 		*/
-		
+	
 	}
 	
 	@Override

@@ -7,8 +7,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.swerveutil.SwerveMath;
 
-import edu.wpi.first.wpilibj.PIDController;
-
 
 public class SwerveModule {
 
@@ -17,13 +15,8 @@ public class SwerveModule {
 	private TalonSRX mTurn;
 	private TalonSRX mDrive;
 
-	private PIDController pidController;
-	private SRXQuadEncoder kInput;
-	private SRXOutput kOutput;
-
-
 	private boolean isReversed;	
-	private double offset, targetAngle;
+	private double offset;
 
 	private boolean PIDcontrol = true;
 
@@ -40,15 +33,6 @@ public class SwerveModule {
 		mDrive = new TalonSRX(driveID);
 		this.offset = offset;
 		this.isReversed = isReversed;
-		
-		kInput = new SRXQuadEncoder(mTurn);
-		kOutput = new SRXOutput(mTurn);
-		
-		pidController = new PIDController(Constants.kP, Constants.kI, Constants.kD, Constants.kF, kInput, kOutput, .05);
-		pidController.setInputRange(-180, 180);
-		pidController.setContinuous();
-		pidController.setOutputRange(-1.0, 1.0);
-		pidController.enable();
 
 		mTurn.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 		mDrive.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
@@ -60,21 +44,10 @@ public class SwerveModule {
 
 	public void turnMotorControl(double targetAngle) {
 
-		this.targetAngle = targetAngle;
-
 		double amtOff, targetPos, turnMotorPower;
 		
 		
 		if(PIDcontrol) {
-<<<<<<< Updated upstream
-			pidController.enable();
-			pidController.setSetpoint(targetAngle);
-		}
-		else {
-			pidController.disable();
-			turnAdjEncoder =  mTurn.getSelectedSensorPosition(Constants.kTimeoutMs) - offset;
-			amtOff = turnAdjEncoder - targetPos;
-=======
 			double c, t;
 			//find most efficient direction
 			c = swerveMath.normalizeAngle(getTurnRawDegrees());
@@ -95,7 +68,6 @@ public class SwerveModule {
 		else {
 			targetPos = (targetAngle * fullRot / 360);
 			amtOff = getTurnAdjPosition() - targetPos;
->>>>>>> Stashed changes
 			
 			turnMotorPower = (-amtOff/fullRot) + Math.floor((amtOff + (fullRot / 2)) / fullRot);
 			
@@ -160,7 +132,6 @@ public class SwerveModule {
 	}
 	
 	public void setPIDF(double kP, double kI, double kD, double kF) {
-		pidController.setPID(kP, kI, kD, kF);
 	}
 
 	public boolean isInverted() {
