@@ -4,6 +4,7 @@ import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
 import org.usfirst.frc.team4653.robot.Constants.Location;
 import org.usfirst.frc.team4653.robot.commands.CrabDrive;
+import org.usfirst.frc.team4653.robot.commands.SwerveDrive;
 import org.usfirst.frc.team4653.robot.swerveutil.SwerveModule;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -59,8 +60,10 @@ public class DriveTrain extends Subsystem {
 	}
 	
 	public void crabDrive(double angle, double speed) {
-		setAllAngle(angle);
-		setAllSpeed(speed);
+		modFrontLeft.setModule(angle, speed);
+		modFrontRight.setModule(angle, speed);
+		modBackLeft.setModule(angle, speed);
+		modBackRight.setModule(angle, speed);
 	}
 
 	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed) {
@@ -186,7 +189,7 @@ public class DriveTrain extends Subsystem {
 	}
 
     public void initDefaultCommand() {
-		setDefaultCommand(new CrabDrive());
+		setDefaultCommand(new SwerveDrive());
 	}
 	
 }

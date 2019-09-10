@@ -33,18 +33,21 @@ public class OI {
 	
 	public double getStickAngle() {
 		double rads = Math.atan2(stick.getX(), -stick.getY());
+		
+		if(getStickMagnitude() == 0) {
+			return 0;
+		}
 		return Math.toDegrees(rads);
 	}
 
 	public double getStickMagnitude() {
 		double mag = Math.hypot(stick.getX(), stick.getY());
 
-		if(Math.abs(mag) > .05) {
+		if(Math.abs(mag) >= .1) {
 			return mag;
 		} 
-		else {
-			return 0;
-		}
+		return 0;
+
 	}
 	
 }

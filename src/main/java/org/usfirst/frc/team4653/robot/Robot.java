@@ -1,21 +1,22 @@
 package org.usfirst.frc.team4653.robot;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
 import org.usfirst.frc.team4653.robot.subsystems.DriveTrain;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Robot extends TimedRobot {
 	
 	public static OI oi;
 	public static DriveTrain driveTrain;
-	TalonSRX frontLeft = new TalonSRX(Constants.FLdrive);
-	TalonSRX frontRight = new TalonSRX(Constants.FRdrive);
-	TalonSRX backLeft = new TalonSRX(Constants.BLdrive);
-	TalonSRX backRight = new TalonSRX(Constants.BRdrive);
+	CANSparkMax frontLeft = new CANSparkMax(Constants.FLdrive, MotorType.kBrushless);
+	CANSparkMax frontRight = new CANSparkMax(Constants.FRdrive, MotorType.kBrushless);
+	CANSparkMax backLeft = new CANSparkMax(Constants.BLdrive, MotorType.kBrushless);
+	CANSparkMax backRight = new CANSparkMax(Constants.BRdrive, MotorType.kBrushless);
 	TalonSRX frontLeftT = new TalonSRX(Constants.FLturn);
 	TalonSRX frontRightT = new TalonSRX(Constants.FRturn);
 	TalonSRX backLeftT = new TalonSRX(Constants.BLturn);
@@ -54,7 +55,7 @@ public class Robot extends TimedRobot {
 
 		Scheduler.getInstance().run();
 
-		driveTrain.printAdjTurnEnc();
+		System.out.println(oi.getStickAngle() + " " + oi.getStickMagnitude());
 	}
 
 	@Override

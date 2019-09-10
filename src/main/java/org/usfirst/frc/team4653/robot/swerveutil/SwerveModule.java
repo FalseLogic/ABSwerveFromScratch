@@ -3,19 +3,18 @@ package org.usfirst.frc.team4653.robot.swerveutil;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.usfirst.frc.team4653.robot.Constants;
-import org.usfirst.frc.team4653.robot.swerveutil.SwerveMath;
 
 
 public class SwerveModule {
 
-	private SwerveMath swerveMath;
-
 	public TalonSRX mTurn;
-	public TalonSRX mDrive;
+	public CANSparkMax mDrive;
 
-	private boolean isReversed;	
+	private boolean isReversed, tempinv;
 	private double offset;
 
 	private boolean PIDcontrol = true;
@@ -30,35 +29,39 @@ public class SwerveModule {
      */
 	public SwerveModule(int turnID, int driveID, double offset, boolean isReversed) {
 		mTurn = new TalonSRX(turnID);
-		mDrive = new TalonSRX(driveID);
+		mDrive = new CANSparkMax(driveID, MotorType.kBrushless);
 		this.offset = offset;
 		this.isReversed = isReversed;
 
 		mTurn.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-		mDrive.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-		
-		mDrive.config_kF(Constants.kPIDLoopIdx, 1.6, Constants.kTimeoutMs);
-		mDrive.config_kP(Constants.kPIDLoopIdx, 1.75, Constants.kTimeoutMs);
 	}
 	
 
+	private double normalizeAngle(double angle) {
+
+		double rads = Math.toRadians(angle);
+
+		return Math.toDegrees(Math.atan2(Math.sin(rads), Math.cos(rads)));
+	}
+
 	public void turnMotorControl(double targetAngle) {
 
-		
 		if(PIDcontrol) {
-			double target, currentAngle;
-			//find most efficient direction
-			currentAngle = swerveMath.normalizeAngle(getTurnRawDegrees());
-			if(Math.abs(currentAngle - targetAngle) > 180) {
-				if(currentAngle - targetAngle > 0) {
-					targetAngle += 360;
-				}
-				else {
-					targetAngle -= 360;
-				}
+		
+			double target, current;
+			current = getTurnRawDegrees();
+			target = targetAngle;
+
+			if(Math.abs(target - current) > 90 && Math.abs(target - current) < 270) {
+				target = (target + 180) % 360;
+				tempinv = true;
 			}
-			//translate to ticks
-			target = targetAngle * fullRot / 360;
+			else {
+				tempinv = false;
+			}
+
+
+			target *= fullRot / 360;
 			mTurn.set(ControlMode.Position, target);
 
 		}
@@ -82,17 +85,18 @@ public class SwerveModule {
 	}
 	
 	public void spinWheel(double speed) {
-		if(isReversed) {
-			mDrive.set(ControlMode.PercentOutput, -speed);
+		if((isReversed && !tempinv) || (!isReversed && tempinv)) {
+			mDrive.set(-speed);
 			//mDrive.set(ControlMode.Velocity, speed * -600);
 		}
 		else {
-			mDrive.set(ControlMode.PercentOutput, speed);
+			mDrive.set(speed);
 			//mDrive.set(ControlMode.Velocity, speed * 600);
 		}		
 	}
 
 	public void setModule(double targetAngle, double speed) {
+		
 		turnMotorControl(targetAngle);
 		spinWheel(speed);
 	}
@@ -118,16 +122,16 @@ public class SwerveModule {
 	}
 
 	public double getDriveRawPosition() {
-		return mDrive.getSensorCollection().getQuadraturePosition();
+		return mDrive.getEncoder().getPosition();
 	}
 	public double getDriveVelocity() {
-		return mDrive.getSensorCollection().getQuadratureVelocity();
+		return mDrive.getEncoder().getVelocity();
 	}
 	public void resetTurnEncoder() {
 		mTurn.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 	}
 	public void resetDriveEncoder() {
-		mDrive.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		mDrive.getEncoder().setPosition(0);
 	}
 	
 	public void setPIDF(double kP, double kI, double kD, double kF) {

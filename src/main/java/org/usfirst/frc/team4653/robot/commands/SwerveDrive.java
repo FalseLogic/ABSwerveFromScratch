@@ -24,9 +24,12 @@ public class SwerveDrive extends Command {
     }
 
     protected void execute() {
-        double forwardSpeed = -Robot.oi.getStickY();
+		double forwardSpeed = -Robot.oi.getStickY();
+		if(Math.abs(forwardSpeed) < .1) {forwardSpeed = 0;}
 		double strafeSpeed = Robot.oi.getStickX();
+		if(Math.abs(strafeSpeed) < .1) {strafeSpeed = 0;}
 		double rotateSpeed = .85 * Robot.oi.getStickZ();
+		if(Math.abs(rotateSpeed) < .1) {rotateSpeed = 0;}
     	Robot.driveTrain.swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, isFieldOriented);
     }
 
