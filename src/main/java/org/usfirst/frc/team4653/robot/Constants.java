@@ -21,7 +21,7 @@ public class Constants {
 			kTimeoutMs = 10,
 			kPIDLoopIdx = 0;
 	
-	public static final double kP = 1.312,
+	public static final double kP = .0039,
 			kI = 0,
 			kD = 0, 
 			kF = 0;

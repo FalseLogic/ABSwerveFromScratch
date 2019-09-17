@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class DriveTrain extends Subsystem {
 	
-	private SwerveModule modFrontLeft = new SwerveModule(Constants.FLturn, Constants.FLdrive, Constants.FLoffset, false);
+	private SwerveModule modFrontLeft = new SwerveModule(Constants.FLturn, Constants.FLdrive, Constants.FLoffset, true);
 	private SwerveModule modFrontRight = new SwerveModule(Constants.FRturn, Constants.FRdrive, Constants.FRoffset, true);
-	private SwerveModule modBackLeft = new SwerveModule(Constants.BLturn, Constants.BLdrive, Constants.BLoffset, false);
-	private SwerveModule modBackRight = new SwerveModule(Constants.BRturn, Constants.BRdrive, Constants.BRoffset, true);
+	private SwerveModule modBackLeft = new SwerveModule(Constants.BLturn, Constants.BLdrive, Constants.BLoffset, true);
+	private SwerveModule modBackRight = new SwerveModule(Constants.BRturn, Constants.BRdrive, Constants.BRoffset, false);
 	
 	public void setModule(Location location, double targetAngle, double power) {
 		switch(location) {
@@ -181,11 +181,11 @@ public class DriveTrain extends Subsystem {
 		System.out.println(modBackRight.getTurnVelocity());
 	}
 	
-	public void setAllPIDF(double kP, double kI, double kD, double kF) {
-		modFrontLeft.setPIDF(kP, kI, kD, kF);
-		modFrontRight.setPIDF(kP, kI, kD, kF);
-		modBackLeft.setPIDF(kP, kI, kD, kF);
-		modBackRight.setPIDF(kP, kI, kD, kF);
+	public void setAllPIDF(double kP, double kI, double kD) {
+		modFrontLeft.setPIDF(kP, kI, kD);
+		modFrontRight.setPIDF(kP, kI, kD);
+		modBackLeft.setPIDF(kP, kI, kD);
+		modBackRight.setPIDF(kP, kI, kD);
 	}
 
     public void initDefaultCommand() {

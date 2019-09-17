@@ -22,13 +22,13 @@ public class OI {
 	}
 
 	public double getStickX() {
-		return stick.getX();
+		return filter(stick.getX());
 	}
 	public double getStickY() {
-		return stick.getY();
+		return filter(stick.getY());
 	}
 	public double getStickZ() {
-		return stick.getZ();
+		return filter(stick.getZ());
 	}
 	
 	public double getStickAngle() {
@@ -43,11 +43,14 @@ public class OI {
 	public double getStickMagnitude() {
 		double mag = Math.hypot(stick.getX(), stick.getY());
 
-		if(Math.abs(mag) >= .1) {
-			return mag;
-		} 
-		return 0;
+		return filter(mag);
+	}
 
+	private double filter(double a) {
+		if(a < .1) {
+			return 0;
+		}
+		return a;
 	}
 	
 }
