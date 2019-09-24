@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4653.robot.commands;
 
 import org.usfirst.frc.team4653.robot.Robot;
+import org.usfirst.frc.team4653.robot.OI.Stick;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -14,8 +15,8 @@ public class CrabDrive extends Command {
     }
 
     protected void execute() {
-        double angle = Robot.oi.getStickAngle();
-        double speed = Robot.oi.getStickMagnitude() * .85;
+        double angle = Robot.oi.getStickAngle(Stick.RIGHT);
+        double speed = Robot.oi.getStickMagnitude(Stick.RIGHT) * .85;
     	Robot.driveTrain.crabDrive(angle, speed);
     }
 

@@ -16,8 +16,9 @@ public class Constants {
 			  BLoffset = 0,
 			  BRoffset = 0;
 
-	public static final int stickPort = 0,
-			xboxPort = 1,
+	public static final int leftStickPort = 0,
+			rightStickPort = 1,
+			xboxPort = 2,
 			kTimeoutMs = 10,
 			kPIDLoopIdx = 0;
 	

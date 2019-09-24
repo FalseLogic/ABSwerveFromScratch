@@ -49,13 +49,14 @@ public class SwerveModule {
 		pidController.setOutputRange(-1.0, 1.0);
 		pidController.enable();
 
-		mTurn.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		mTurn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 	}
 
 	public void turnMotorControl(double targetAngle) {
 
 		if(PIDcontrol) {
-		
+			
+
 			pidController.enable();
 			pidController.setSetpoint(targetAngle);
 
@@ -88,13 +89,40 @@ public class SwerveModule {
 		}
 	}
 
-	public void setModule(double targetAngle, double speed) {
-		turnMotorControl(targetAngle);
-		spinWheel(speed);
+	public void setModule(double targetAngle, double targetSpeed) {
+
+		double target, current, speed;
+			
+		target = targetAngle;
+		current = getTurnRawDegrees();
+		speed = targetSpeed;
+
+		while(current > 180) current -= 360;
+		while(current < -180) current += 360;
+
+		while(target > 180) target -= 360;
+		while(target < -180) target += 360;
+
+		double error = target - current;
+
+		if(Math.abs(error) > 180.0) {
+			error -= 360.0 * Math.signum(error);
+		}
+
+		if(Math.abs(error) > 90.0) {
+			error -= 180.0 * Math.signum(error);
+			speed *= -1;
+		}
+
+		mTurn.set(ControlMode.Position, getTurnRawPosition() + (error * fullRot / 360));
+		mDrive.set(speed);
+
+		//turnMotorControl(targetAngle);
+		//spinWheel(speed);
 	}
 	
 	public double getTurnRawPosition() {
-		return mTurn.getSensorCollection().getQuadraturePosition();
+		return mTurn.getSelectedSensorPosition(Constants.kPIDLoopIdx);
 	}
 
 	public double getTurnAdjPosition() {

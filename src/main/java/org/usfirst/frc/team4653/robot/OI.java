@@ -10,8 +10,14 @@ public class OI {
 
 	private AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
-	public Joystick stick = new Joystick(Constants.stickPort);
+	public Joystick leftStick = new Joystick(Constants.leftStickPort);
+	public Joystick rightStick = new Joystick(Constants.rightStickPort);
+
 	public XboxController xbox = new XboxController(Constants.xboxPort);
+
+	public enum Stick {
+		LEFT, RIGHT
+	}
 
 	public double getGyroDegrees() {
 		return ahrs.getAngle();
@@ -21,27 +27,33 @@ public class OI {
 		ahrs.reset();
 	}
 
-	public double getStickX() {
-		return filter(stick.getX());
+	public double getStickX(Stick stick) {
+		if(stick == Stick.LEFT) return filter(leftStick.getX());
+		else if(stick == Stick.RIGHT) return filter(rightStick.getX());
+		return 0.0;
 	}
-	public double getStickY() {
-		return filter(stick.getY());
+	public double getStickY(Stick stick) {
+		if(stick == Stick.LEFT) return filter(leftStick.getY());
+		else if(stick == Stick.RIGHT) return filter(rightStick.getY());
+		return 0.0;
 	}
-	public double getStickZ() {
-		return filter(stick.getZ());
+	public double getStickZ(Stick stick) {
+		if(stick == Stick.LEFT) return filter(leftStick.getZ());
+		else if(stick == Stick.RIGHT) return filter(rightStick.getZ());
+		return 0.0;
 	}
 	
-	public double getStickAngle() {
-		double rads = Math.atan2(stick.getX(), -stick.getY());
+	public double getStickAngle(Stick stick) {
+		double rads = Math.atan2(getStickX(stick), -getStickY(stick));
 		
-		if(getStickMagnitude() == 0) {
-			return 0;
+		if(getStickMagnitude(stick) == 0) {
+			return 0.0;
 		}
 		return Math.toDegrees(rads);
 	}
 
-	public double getStickMagnitude() {
-		double mag = Math.hypot(stick.getX(), stick.getY());
+	public double getStickMagnitude(Stick stick) {
+		double mag = Math.hypot(getStickX(stick), getStickY(stick));
 
 		return filter(mag);
 	}

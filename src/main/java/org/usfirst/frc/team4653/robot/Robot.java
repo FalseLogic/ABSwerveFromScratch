@@ -30,9 +30,6 @@ public class Robot extends TimedRobot {
 		oi = new OI();
 		driveTrain = new DriveTrain();
 
-		driveTrain.resetDriveEncoders();
-		driveTrain.resetTurnEncoders();
-
 		oi.resetGyro();
 	}
 
@@ -48,14 +45,16 @@ public class Robot extends TimedRobot {
 		driveTrain.setAllPIDF(P, I, D, F);
 		*/
 
+		
+
 	}
 
 	@Override
 	public void teleopPeriodic() {
 
-		Scheduler.getInstance().run();
+		driveTrain.printRawTurnEnc();
 
-		System.out.println(oi.getStickAngle() + " " + oi.getStickMagnitude());
+		Scheduler.getInstance().run();
 	}
 
 	@Override
