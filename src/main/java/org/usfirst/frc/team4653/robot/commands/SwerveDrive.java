@@ -28,10 +28,11 @@ public class SwerveDrive extends Command {
 
 		double forwardSpeed = -Robot.oi.getStickY(Stick.LEFT);
 		double strafeSpeed = Robot.oi.getStickX(Stick.LEFT);
-		double rotateSpeed = .85 * Robot.oi.getStickX(Stick.RIGHT);
+		double rotateSpeed = .85 * Robot.oi.getStickZ(Stick.LEFT);
 		if(!canRotate) rotateSpeed = 0;
 
-    	Robot.driveTrain.swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, isFieldOriented);
+		if(Robot.oi.leftStick.getRawButton(1))
+			Robot.driveTrain.swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, isFieldOriented);
     }
 
     protected boolean isFinished() {

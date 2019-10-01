@@ -8,8 +8,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.usfirst.frc.team4653.robot.Constants;
 
-import edu.wpi.first.wpilibj.PIDController;
-
 
 public class SwerveModule {
 
@@ -18,11 +16,6 @@ public class SwerveModule {
 
 	private boolean isReversed;
 	private double offset;
-
-	private PIDController pidController;
-	private SRXQuadEncoder kInput;
-	private SRXOutput kOutput;
-
 
 	private boolean PIDcontrol = Constants.modulePIDControl;
 
@@ -40,15 +33,9 @@ public class SwerveModule {
 		this.offset = offset;
 		this.isReversed = isReversed;
 
-		kInput = new SRXQuadEncoder(mTurn);
-		kOutput = new SRXOutput(mTurn);
-
-		pidController = new PIDController(Constants.kP, Constants.kI, Constants.kD, Constants.kF, kInput, kOutput, .05);
-		pidController.setInputRange(-180, 180);
-		pidController.setContinuous();
-		pidController.setOutputRange(-1.0, 1.0);
-		pidController.enable();
-
+		mTurn.config_kP(Constants.kPIDLoopIdx, Constants.SWERVE_P_GAIN);
+		mTurn.config_kI(Constants.kPIDLoopIdx, Constants.SWERVE_I_GAIN);
+		mTurn.config_kD(Constants.kPIDLoopIdx, Constants.SWERVE_D_GAIN);
 		mTurn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 	}
 
@@ -57,8 +44,6 @@ public class SwerveModule {
 		if(PIDcontrol) {
 			
 
-			pidController.enable();
-			pidController.setSetpoint(targetAngle);
 
 		}
 		else {
@@ -115,10 +100,10 @@ public class SwerveModule {
 		}
 
 		mTurn.set(ControlMode.Position, getTurnRawPosition() + (error * fullRot / 360));
-		mDrive.set(speed);
+		//mDrive.set(speed);
 
 		//turnMotorControl(targetAngle);
-		//spinWheel(speed);
+		spinWheel(speed);
 	}
 	
 	public double getTurnRawPosition() {
@@ -148,14 +133,16 @@ public class SwerveModule {
 		return mDrive.getEncoder().getVelocity();
 	}
 	public void resetTurnEncoder() {
-		mTurn.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		mTurn.getSensorCollection().setQuadraturePosition(0, Constants.kTimeoutMs);
 	}
 	public void resetDriveEncoder() {
 		mDrive.getEncoder().setPosition(0);
 	}
 	
-	public void setPIDF(double kP, double kI, double kD) {
-		pidController.setPID(kP, kI, kD);
+	public void setTurnPID(double kP, double kI, double kD) {
+		mTurn.config_kP(Constants.kPIDLoopIdx, kP);
+		mTurn.config_kI(Constants.kPIDLoopIdx, kI);
+		mTurn.config_kD(Constants.kPIDLoopIdx, kD);
 	}
 
 	public boolean isInverted() {

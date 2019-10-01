@@ -45,10 +45,6 @@ public class OI {
 	
 	public double getStickAngle(Stick stick) {
 		double rads = Math.atan2(getStickX(stick), -getStickY(stick));
-		
-		if(getStickMagnitude(stick) == 0) {
-			return 0.0;
-		}
 		return Math.toDegrees(rads);
 	}
 
@@ -59,7 +55,7 @@ public class OI {
 	}
 
 	private double filter(double a) {
-		if(a < .1) {
+		if(Math.abs(a) < .1) {
 			return 0;
 		}
 		return a;

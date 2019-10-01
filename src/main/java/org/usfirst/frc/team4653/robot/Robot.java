@@ -13,6 +13,7 @@ public class Robot extends TimedRobot {
 	
 	public static OI oi;
 	public static DriveTrain driveTrain;
+	/*
 	CANSparkMax frontLeft = new CANSparkMax(Constants.FLdrive, MotorType.kBrushless);
 	CANSparkMax frontRight = new CANSparkMax(Constants.FRdrive, MotorType.kBrushless);
 	CANSparkMax backLeft = new CANSparkMax(Constants.BLdrive, MotorType.kBrushless);
@@ -20,7 +21,7 @@ public class Robot extends TimedRobot {
 	TalonSRX frontLeftT = new TalonSRX(Constants.FLturn);
 	TalonSRX frontRightT = new TalonSRX(Constants.FRturn);
 	TalonSRX backLeftT = new TalonSRX(Constants.BLturn);
-	TalonSRX backRightT = new TalonSRX(Constants.BRturn);
+	TalonSRX backRightT = new TalonSRX(Constants.BRturn);*/
 
 	//Preferences prefs;
 	//double P, I, D, F;
@@ -41,10 +42,10 @@ public class Robot extends TimedRobot {
 		P = prefs.getDouble("P gain", Constants.kP);
 		I = prefs.getDouble("I gain", Constants.kI);
 		D = prefs.getDouble("D gain", Constants.kD);
-		F = prefs.getDouble("F gain", Constants.kF);
-		driveTrain.setAllPIDF(P, I, D, F);
+		driveTrain.setAllTurnPID(P, I, D);
 		*/
 
+		//driveTrain.setAllTurnPID(Constants.SWERVE_P_GAIN, Constants.SWERVE_I_GAIN, Constants.SWERVE_D_GAIN);
 		
 
 	}
@@ -52,7 +53,11 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 
-		driveTrain.printRawTurnEnc();
+		if(oi.leftStick.getRawButtonPressed(11)) {
+			driveTrain.resetTurnEncoders();
+		}
+
+		driveTrain.printAdjTurnEnc();
 
 		Scheduler.getInstance().run();
 	}

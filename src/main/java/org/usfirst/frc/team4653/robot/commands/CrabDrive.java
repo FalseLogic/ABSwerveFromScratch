@@ -15,8 +15,9 @@ public class CrabDrive extends Command {
     }
 
     protected void execute() {
-        double angle = Robot.oi.getStickAngle(Stick.RIGHT);
-        double speed = Robot.oi.getStickMagnitude(Stick.RIGHT) * .85;
+        double angle = Robot.oi.getStickAngle(Stick.LEFT);
+		double speed = Robot.oi.getStickMagnitude(Stick.LEFT) * .85;
+		System.out.println(angle + " " + speed);
     	Robot.driveTrain.crabDrive(angle, speed);
     }
 

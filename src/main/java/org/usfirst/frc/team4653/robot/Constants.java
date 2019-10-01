@@ -22,14 +22,13 @@ public class Constants {
 			kTimeoutMs = 10,
 			kPIDLoopIdx = 0;
 	
-	public static final double kP = .0039,
-			kI = 0,
-			kD = 0, 
-			kF = 0;
+	public static final double SWERVE_P_GAIN = .945,
+			SWERVE_I_GAIN = 0,
+			SWERVE_D_GAIN = 49.5;
 
-	public static final double kWheelbase = 19.0,
-			kTrackwidth = 27.0,
-			kTurnRadius = Math.hypot(kWheelbase, kTrackwidth);
+	public static final double WHEELBASE_INCHES = 19.0,
+			TRACKWIDTH_INCHES = 27.0,
+			TURN_RADIUS_INCHES = Math.hypot(WHEELBASE_INCHES, TRACKWIDTH_INCHES);
 			
 	public static final boolean modulePIDControl = true;
 

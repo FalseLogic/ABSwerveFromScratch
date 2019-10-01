@@ -3,6 +3,7 @@ package org.usfirst.frc.team4653.robot.subsystems;
 import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
 import org.usfirst.frc.team4653.robot.Constants.Location;
+import org.usfirst.frc.team4653.robot.commands.CrabDrive;
 import org.usfirst.frc.team4653.robot.commands.SwerveDrive;
 import org.usfirst.frc.team4653.robot.swerveutil.SwerveModule;
 
@@ -11,7 +12,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class DriveTrain extends Subsystem {
 	
 	private SwerveModule modFrontLeft = new SwerveModule(Constants.FLturn, Constants.FLdrive, Constants.FLoffset, true);
-	private SwerveModule modFrontRight = new SwerveModule(Constants.FRturn, Constants.FRdrive, Constants.FRoffset, true);
+	private SwerveModule modFrontRight = new SwerveModule(Constants.FRturn, Constants.FRdrive, Constants.FRoffset, false);
 	private SwerveModule modBackLeft = new SwerveModule(Constants.BLturn, Constants.BLdrive, Constants.BLoffset, true);
 	private SwerveModule modBackRight = new SwerveModule(Constants.BRturn, Constants.BRdrive, Constants.BRoffset, false);
 	
@@ -82,8 +83,8 @@ public class DriveTrain extends Subsystem {
 		forwardSpeed = T;
 		}
 
-		double J = Constants.kWheelbase / Constants.kTurnRadius;
-		double K = Constants.kTrackwidth / Constants.kTurnRadius;
+		double J = Constants.WHEELBASE_INCHES / Constants.TURN_RADIUS_INCHES;
+		double K = Constants.TRACKWIDTH_INCHES / Constants.TURN_RADIUS_INCHES;
 
 		double A = strafeSpeed - (rotateSpeed * J);
 		double B = strafeSpeed + (rotateSpeed * J);
@@ -180,11 +181,11 @@ public class DriveTrain extends Subsystem {
 		System.out.println(modBackRight.getTurnVelocity());
 	}
 	
-	public void setAllPIDF(double kP, double kI, double kD) {
-		modFrontLeft.setPIDF(kP, kI, kD);
-		modFrontRight.setPIDF(kP, kI, kD);
-		modBackLeft.setPIDF(kP, kI, kD);
-		modBackRight.setPIDF(kP, kI, kD);
+	public void setAllTurnPID(double kP, double kI, double kD) {
+		modFrontLeft.setTurnPID(kP, kI, kD);
+		modFrontRight.setTurnPID(kP, kI, kD);
+		modBackLeft.setTurnPID(kP, kI, kD);
+		modBackRight.setTurnPID(kP, kI, kD);
 	}
 
     public void initDefaultCommand() {
