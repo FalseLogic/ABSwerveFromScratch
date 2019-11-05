@@ -19,20 +19,17 @@ public class SwerveDrive extends Command {
     protected void execute() {
 		canRotate = true;
 
-		if(Robot.oi.leftStick.getRawButton(1) || Robot.oi.rightStick.getRawButton(1)) {
-			isFieldOriented = false;
-		}
-		else {
-			isFieldOriented = true;
-		}
+		isFieldOriented = true;
 
-		double forwardSpeed = -Robot.oi.getStickY(Stick.LEFT);
-		double strafeSpeed = Robot.oi.getStickX(Stick.LEFT);
-		double rotateSpeed = .85 * Robot.oi.getStickZ(Stick.LEFT);
+		double forwardSpeed = .8 * -Robot.oi.getStickY(Stick.LEFT);
+		double strafeSpeed = .8 * Robot.oi.getStickX(Stick.LEFT);
+		double rotateSpeed = .4 * Robot.oi.getStickZ(Stick.LEFT);
 		if(!canRotate) rotateSpeed = 0;
-
+		
 		if(Robot.oi.leftStick.getRawButton(1))
 			Robot.driveTrain.swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, isFieldOriented);
+		else
+			Robot.driveTrain.fullStop();
     }
 
     protected boolean isFinished() {

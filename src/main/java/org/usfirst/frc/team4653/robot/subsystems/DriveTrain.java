@@ -1,8 +1,11 @@
 package org.usfirst.frc.team4653.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
 import org.usfirst.frc.team4653.robot.Constants.Location;
+import org.usfirst.frc.team4653.robot.commands.ArcadeDrive;
 import org.usfirst.frc.team4653.robot.commands.CrabDrive;
 import org.usfirst.frc.team4653.robot.commands.SwerveDrive;
 import org.usfirst.frc.team4653.robot.swerveutil.SwerveModule;
@@ -11,13 +14,21 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class DriveTrain extends Subsystem {
 	
-	private SwerveModule modFrontLeft = new SwerveModule(Constants.FLturn, Constants.FLdrive, Constants.FLoffset, true);
-	private SwerveModule modFrontRight = new SwerveModule(Constants.FRturn, Constants.FRdrive, Constants.FRoffset, false);
-	private SwerveModule modBackLeft = new SwerveModule(Constants.BLturn, Constants.BLdrive, Constants.BLoffset, true);
-	private SwerveModule modBackRight = new SwerveModule(Constants.BRturn, Constants.BRdrive, Constants.BRoffset, false);
+	private SwerveModule modFrontLeft;
+	private SwerveModule modFrontRight;
+	private SwerveModule modBackLeft;
+	private SwerveModule modBackRight;
 	
+	public DriveTrain() {
+		modFrontLeft = new SwerveModule(Constants.FLturn, Constants.FLdrive, Constants.FLoffset, true);
+		modFrontRight = new SwerveModule(Constants.FRturn, Constants.FRdrive, Constants.FRoffset, false);
+		modBackLeft = new SwerveModule(Constants.BLturn, Constants.BLdrive, Constants.BLoffset, true);
+		modBackRight = new SwerveModule(Constants.BRturn, Constants.BRdrive, Constants.BRoffset, false);
+	}
+
 	public void setModule(Location location, double targetAngle, double power) {
 		switch(location) {
+			default:
 			case FRONT_LEFT:
 				modFrontLeft.setModule(targetAngle, power);
 			case FRONT_RIGHT:
@@ -40,7 +51,7 @@ public class DriveTrain extends Subsystem {
 			case BACK_LEFT:
 				return modBackLeft;
 			case BACK_RIGHT:
-				return modFrontRight;
+				return modBackRight;
 
 		}
 	}
@@ -66,6 +77,20 @@ public class DriveTrain extends Subsystem {
 		modBackRight.setModule(angle, speed);
 	}
 
+	public void tankDrive(double left, double right) {
+		modFrontLeft.setModule(0, left);
+		modFrontRight.setModule(0, right);
+		modBackLeft.setModule(0, left);
+		modBackRight.setModule(0, right);
+	}
+
+	public void arcadeDrive(double power, double turn) {
+		modFrontLeft.setModule(0, power + turn);
+		modFrontRight.setModule(0, power - turn);
+		modBackLeft.setModule(0, power + turn);
+		modBackRight.setModule(0, power - turn);
+	}
+
 	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed) {
 		swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, false);
 	}
@@ -78,9 +103,9 @@ public class DriveTrain extends Subsystem {
 		double cos = Math.cos(Math.toRadians(gyroAngle));
 
 		if(isFieldOriented) {
-		double T = (forwardSpeed * cos) + (strafeSpeed * sin);
-		strafeSpeed = (-forwardSpeed * sin) + (strafeSpeed * cos);
-		forwardSpeed = T;
+			double T = (forwardSpeed * cos) + (strafeSpeed * sin);
+			strafeSpeed = (-forwardSpeed * sin) + (strafeSpeed * cos);
+			forwardSpeed = T;
 		}
 
 		double J = Constants.WHEELBASE_INCHES / Constants.TURN_RADIUS_INCHES;
@@ -101,16 +126,25 @@ public class DriveTrain extends Subsystem {
 		double BLangle = Math.atan2(A, D) * 180 / Math.PI;
 		double BRangle = Math.atan2(A, C) * 180 / Math.PI;
 
-		double max = FLspeed;
-		if(FRspeed > max) {max = FRspeed;}
-		if(BLspeed > max) {max = BLspeed;}
-		if(BRspeed > max) {max = BRspeed;}
+		double max = Math.max(Math.max(FLspeed, FRspeed), Math.max(BLspeed, BRspeed));
 		if(max > 1) {FLspeed /= max; FRspeed /= max; BLspeed /= max; BRspeed /= max;}
 
-		modFrontLeft.setModule(FLangle, FLspeed);
+		modFrontLeft.setModule(FLangle, FLspeed * .93);
 		modFrontRight.setModule(FRangle, FRspeed);
-		modBackLeft.setModule(BLangle, BLspeed);
+		modBackLeft.setModule(BLangle, BLspeed * .93);
 		modBackRight.setModule(BRangle, BRspeed);
+	}
+
+	public void fullStop() {
+		modFrontLeft.getDriveController().set(0);
+		modFrontRight.getDriveController().set(0);
+		modBackLeft.getDriveController().set(0);
+		modBackRight.getDriveController().set(0);
+
+		modFrontLeft.getTurnController().set(ControlMode.PercentOutput, 0);
+		modFrontRight.getTurnController().set(ControlMode.PercentOutput, 0);
+		modBackLeft.getTurnController().set(ControlMode.PercentOutput, 0);
+		modBackRight.getTurnController().set(ControlMode.PercentOutput, 0);
 	}
 
 	public void resetDriveEncoders() {

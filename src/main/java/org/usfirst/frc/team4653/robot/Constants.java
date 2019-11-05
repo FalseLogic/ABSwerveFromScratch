@@ -11,10 +11,10 @@ public class Constants {
 			  BRdrive = 4,
 			  BRturn = 8;
 	
-	public static final int FLoffset = 0,
-			  FRoffset = 0,
-			  BLoffset = 0,
-			  BRoffset = 0;
+	public static final int FLoffset = 1215,
+			  FRoffset = 601,
+			  BLoffset = -1152,
+			  BRoffset = -786;
 
 	public static final int leftStickPort = 0,
 			rightStickPort = 1,

@@ -3,6 +3,7 @@ package org.usfirst.frc.team4653.robot.swerveutil;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -11,8 +12,8 @@ import org.usfirst.frc.team4653.robot.Constants;
 
 public class SwerveModule {
 
-	public TalonSRX mTurn;
-	public CANSparkMax mDrive;
+	private WPI_TalonSRX turn;
+	private CANSparkMax drive;
 
 	private boolean isReversed;
 	private double offset;
@@ -28,22 +29,31 @@ public class SwerveModule {
      * @param offset		encoder value when wheel is pointing stright
      */
 	public SwerveModule(int turnID, int driveID, double offset, boolean isReversed) {
-		mTurn = new TalonSRX(turnID);
-		mDrive = new CANSparkMax(driveID, MotorType.kBrushless);
+		turn = new WPI_TalonSRX(turnID);
+		drive = new CANSparkMax(driveID, MotorType.kBrushless);
 		this.offset = offset;
 		this.isReversed = isReversed;
 
-		mTurn.config_kP(Constants.kPIDLoopIdx, Constants.SWERVE_P_GAIN);
-		mTurn.config_kI(Constants.kPIDLoopIdx, Constants.SWERVE_I_GAIN);
-		mTurn.config_kD(Constants.kPIDLoopIdx, Constants.SWERVE_D_GAIN);
-		mTurn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		turn.config_kP(Constants.kPIDLoopIdx, Constants.SWERVE_P_GAIN);
+		turn.config_kI(Constants.kPIDLoopIdx, Constants.SWERVE_I_GAIN);
+		turn.config_kD(Constants.kPIDLoopIdx, Constants.SWERVE_D_GAIN);
+		turn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+	}
+
+	public WPI_TalonSRX getTurnController() {
+		return turn;
+	}
+
+	public CANSparkMax getDriveController() {
+		return drive;
 	}
 
 	public void turnMotorControl(double targetAngle) {
 
 		if(PIDcontrol) {
 			
-
+			//moved over to setModule
+			//
 
 		}
 		else {
@@ -57,20 +67,20 @@ public class SwerveModule {
 			turnMotorPower += Math.copySign(.05, turnMotorPower);
 			
 			if(Math.abs(turnMotorPower) > .06) {
-				mTurn.set(ControlMode.PercentOutput, turnMotorPower);
+				turn.set(ControlMode.PercentOutput, turnMotorPower);
 			}
 			else {
-				mTurn.set(ControlMode.PercentOutput, 0);
+				turn.set(ControlMode.PercentOutput, 0);
 			}
 		}
 	}
 	
 	public void spinWheel(double speed) {
 		if(isReversed) {
-			mDrive.set(-speed);
+			drive.set(-speed);
 		}
 		else {
-			mDrive.set(speed);
+			drive.set(speed);
 		}
 	}
 
@@ -79,7 +89,7 @@ public class SwerveModule {
 		double target, current, speed;
 			
 		target = targetAngle;
-		current = getTurnRawDegrees();
+		current = getTurnDegrees();
 		speed = targetSpeed;
 
 		while(current > 180) current -= 360;
@@ -99,19 +109,18 @@ public class SwerveModule {
 			speed *= -1;
 		}
 
-		mTurn.set(ControlMode.Position, getTurnRawPosition() + (error * fullRot / 360));
-		//mDrive.set(speed);
-
+		turn.set(ControlMode.Position, getTurnRawPosition() + (error * fullRot / 360));
+		//drive.set(speed);
 		//turnMotorControl(targetAngle);
 		spinWheel(speed);
 	}
 	
 	public double getTurnRawPosition() {
-		return mTurn.getSelectedSensorPosition(Constants.kPIDLoopIdx);
+		return turn.getSelectedSensorPosition(Constants.kPIDLoopIdx);
 	}
 
 	public double getTurnAdjPosition() {
-		return  mTurn.getSelectedSensorPosition(Constants.kTimeoutMs) - offset;
+		return turn.getSelectedSensorPosition(Constants.kPIDLoopIdx) - offset;
 	}
 
 	//public double getTurnErrorDegrees() {
@@ -119,30 +128,31 @@ public class SwerveModule {
 	//}
 
 	public double getTurnVelocity() {
-		return mTurn.getSensorCollection().getQuadratureVelocity();
+		return turn.getSensorCollection().getQuadratureVelocity();
 	}
 
-	public double getTurnRawDegrees() {
+	public double getTurnDegrees() {
 		return getTurnAdjPosition() / fullRot * 360;
 	}
 
 	public double getDriveRawPosition() {
-		return mDrive.getEncoder().getPosition();
+		return drive.getEncoder().getPosition();
 	}
 	public double getDriveVelocity() {
-		return mDrive.getEncoder().getVelocity();
+		return drive.getEncoder().getVelocity();
 	}
 	public void resetTurnEncoder() {
-		mTurn.getSensorCollection().setQuadraturePosition(0, Constants.kTimeoutMs);
+		//turn.getSensorCollection().setQuadraturePosition(0, Constants.kTimeoutMs);
+		turn.setSelectedSensorPosition(0);
 	}
 	public void resetDriveEncoder() {
-		mDrive.getEncoder().setPosition(0);
+		drive.getEncoder().setPosition(0);
 	}
 	
 	public void setTurnPID(double kP, double kI, double kD) {
-		mTurn.config_kP(Constants.kPIDLoopIdx, kP);
-		mTurn.config_kI(Constants.kPIDLoopIdx, kI);
-		mTurn.config_kD(Constants.kPIDLoopIdx, kD);
+		turn.config_kP(Constants.kPIDLoopIdx, kP);
+		turn.config_kI(Constants.kPIDLoopIdx, kI);
+		turn.config_kD(Constants.kPIDLoopIdx, kD);
 	}
 
 	public boolean isInverted() {

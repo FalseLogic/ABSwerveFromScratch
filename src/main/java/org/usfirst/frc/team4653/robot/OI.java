@@ -8,12 +8,20 @@ import edu.wpi.first.wpilibj.XboxController;
 
 public class OI {
 
-	private AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	public OI() {
+		ahrs = new AHRS(SPI.Port.kMXP);
 
-	public Joystick leftStick = new Joystick(Constants.leftStickPort);
-	public Joystick rightStick = new Joystick(Constants.rightStickPort);
+		leftStick = new Joystick(Constants.leftStickPort);
+		rightStick = new Joystick(Constants.rightStickPort);
+		xbox = new XboxController(Constants.xboxPort);
+	}
 
-	public XboxController xbox = new XboxController(Constants.xboxPort);
+	private AHRS ahrs;
+
+	public Joystick leftStick;
+	public Joystick rightStick;
+
+	public XboxController xbox;
 
 	public enum Stick {
 		LEFT, RIGHT
