@@ -63,21 +63,6 @@ public class Robot extends TimedRobot {
 			driveTrain.resetTurnEncoders();
 		}
 
-		if(oi.leftStick.getRawButton(1)) {
-		//	driveTrain.getSwerveModule(Location.FRONT_LEFT).getDriveController().set(.5);
-		//	driveTrain.getSwerveModule(Location.FRONT_RIGHT).getDriveController().set(.5);
-		//	driveTrain.getSwerveModule(Location.BACK_LEFT).getDriveController().set(.5);
-		//	driveTrain.getSwerveModule(Location.BACK_RIGHT).getDriveController().set(.5);
-
-		//	driveTrain.getSwerveModule(Location.FRONT_LEFT).getTurnController().set(ControlMode.PercentOutput, .2);
-		//	driveTrain.getSwerveModule(Location.FRONT_RIGHT).getTurnController().set(ControlMode.PercentOutput, .2);
-		//	driveTrain.getSwerveModule(Location.BACK_LEFT).getTurnController().set(ControlMode.PercentOutput, .2);
-		//	driveTrain.getSwerveModule(Location.BACK_RIGHT).getTurnController().set(ControlMode.PercentOutput, .2);
-		}
-		else {
-		//	driveTrain.fullStop();
-		}
-
 		System.out.print(Math.round(oi.getGyroDegrees()) + "  ");
 		driveTrain.printRawTurnEnc();
 		driveTrain.printAdjTurnEnc();
