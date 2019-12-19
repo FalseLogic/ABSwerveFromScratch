@@ -9,7 +9,7 @@ public class CrabDrive extends Command {
 	
     public CrabDrive() {
     	requires(Robot.driveTrain);
-    }
+	}
 
     protected void initialize() {
     }

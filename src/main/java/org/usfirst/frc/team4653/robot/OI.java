@@ -11,9 +11,9 @@ public class OI {
 	public OI() {
 		ahrs = new AHRS(SPI.Port.kMXP);
 
-		leftStick = new Joystick(Constants.leftStickPort);
-		rightStick = new Joystick(Constants.rightStickPort);
-		xbox = new XboxController(Constants.xboxPort);
+		leftStick = new Joystick(Constants.LEFT_STICK_PORT);
+		rightStick = new Joystick(Constants.RIGHT_STICK_PORT);
+		xbox = new XboxController(Constants.XBOX_PORT);
 	}
 
 	private AHRS ahrs;

@@ -17,19 +17,27 @@ public class SwerveDrive extends Command {
     }
 
     protected void execute() {
+
 		canRotate = true;
 
-		isFieldOriented = true;
+		isFieldOriented = false;
 
-		double forwardSpeed = .8 * -Robot.oi.getStickY(Stick.LEFT);
-		double strafeSpeed = .8 * Robot.oi.getStickX(Stick.LEFT);
-		double rotateSpeed = .4 * Robot.oi.getStickZ(Stick.LEFT);
+
+		double forwardSpeed = .45 * -Robot.oi.getStickY(Stick.LEFT);
+		double strafeSpeed = .45 * Robot.oi.getStickX(Stick.LEFT);
+		double rotateSpeed = .375 * Robot.oi.getStickZ(Stick.LEFT);
 		if(!canRotate) rotateSpeed = 0;
 		
-		if(Robot.oi.leftStick.getRawButton(1))
-			Robot.driveTrain.swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, isFieldOriented);
-		else
+		if(Robot.oi.leftStick.getRawButton(2)) {
 			Robot.driveTrain.fullStop();
+		}
+		else if(Robot.oi.leftStick.getRawButton(1)) {
+			Robot.driveTrain.swerveDrive(filter(forwardSpeed), filter(strafeSpeed), filter(rotateSpeed), false, false);
+		}
+		else {
+			Robot.driveTrain.swerveDrive(filter(forwardSpeed), filter(strafeSpeed), filter(rotateSpeed), true, false);
+		}
+
     }
 
     protected boolean isFinished() {
@@ -42,4 +50,11 @@ public class SwerveDrive extends Command {
     protected void interrupted() {
 	}
 	
+	private double filter(double a) {
+		if(Math.abs(a) < .1) {
+			return 0;
+		}
+		return a;
+	}
+
 }

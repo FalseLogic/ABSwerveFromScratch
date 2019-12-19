@@ -5,10 +5,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
 import org.usfirst.frc.team4653.robot.Constants.Location;
-import org.usfirst.frc.team4653.robot.commands.ArcadeDrive;
-import org.usfirst.frc.team4653.robot.commands.CrabDrive;
 import org.usfirst.frc.team4653.robot.commands.SwerveDrive;
-import org.usfirst.frc.team4653.robot.swerveutil.SwerveModule;
+import org.usfirst.frc.team4653.robot.swerve.SwerveModule;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -20,10 +18,17 @@ public class DriveTrain extends Subsystem {
 	private SwerveModule modBackRight;
 	
 	public DriveTrain() {
-		modFrontLeft = new SwerveModule(Constants.FLturn, Constants.FLdrive, Constants.FLoffset, true);
-		modFrontRight = new SwerveModule(Constants.FRturn, Constants.FRdrive, Constants.FRoffset, false);
-		modBackLeft = new SwerveModule(Constants.BLturn, Constants.BLdrive, Constants.BLoffset, true);
-		modBackRight = new SwerveModule(Constants.BRturn, Constants.BRdrive, Constants.BRoffset, false);
+		modFrontLeft = new SwerveModule(Constants.FL_TURN_PORT, Constants.FL_DRIVE_PORT, Constants.FL_OFFSET, true);
+		modFrontRight = new SwerveModule(Constants.FR_TURN_PORT, Constants.FR_DRIVE_PORT, Constants.FR_OFFSET, false);
+		modBackLeft = new SwerveModule(Constants.BL_TURN_PORT, Constants.BL_DRIVE_PORT, Constants.BL_OFFSET, true);
+		modBackRight = new SwerveModule(Constants.BR_TURN_PORT, Constants.BR_DRIVE_PORT, Constants.BR_OFFSET, false);
+	}
+
+	public void newOffsets() {
+		modFrontLeft.newOffset();
+		modFrontRight.newOffset();
+		modBackLeft.newOffset();
+		modBackRight.newOffset();
 	}
 
 	public void setModule(Location location, double targetAngle, double power) {
@@ -56,12 +61,12 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 
-	public void setAllAngle(double targetAngle) {
-		modFrontLeft.turnMotorControl(targetAngle);
-		modFrontRight.turnMotorControl(targetAngle);
-		modBackLeft.turnMotorControl(targetAngle);
-		modBackRight.turnMotorControl(targetAngle);
-	}
+	//public void setAllAngle(double targetAngle) {
+	//	modFrontLeft.turnMotorControl(targetAngle);
+	//	modFrontRight.turnMotorControl(targetAngle);
+	//	modBackLeft.turnMotorControl(targetAngle);
+	//	modBackRight.turnMotorControl(targetAngle);
+	//}
 	
 	public void setAllSpeed(double power) {
 		modFrontLeft.spinWheel(power);
@@ -92,17 +97,21 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed) {
-		swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, false);
+		swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, false, false);
 	}
 
-	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed, boolean isFieldOriented) {
+	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed, boolean isFieldOriented, boolean isBackwards) {
 
 		double gyroAngle = Robot.oi.getGyroDegrees();
 
 		double sin = Math.sin(Math.toRadians(gyroAngle));
 		double cos = Math.cos(Math.toRadians(gyroAngle));
 
-		if(isFieldOriented) {
+		if(isBackwards) {
+			forwardSpeed *= -1;
+			strafeSpeed *= -1;
+		}
+		else if(isFieldOriented) {
 			double T = (forwardSpeed * cos) + (strafeSpeed * sin);
 			strafeSpeed = (-forwardSpeed * sin) + (strafeSpeed * cos);
 			forwardSpeed = T;
@@ -129,9 +138,9 @@ public class DriveTrain extends Subsystem {
 		double max = Math.max(Math.max(FLspeed, FRspeed), Math.max(BLspeed, BRspeed));
 		if(max > 1) {FLspeed /= max; FRspeed /= max; BLspeed /= max; BRspeed /= max;}
 
-		modFrontLeft.setModule(FLangle, FLspeed * .93);
+		modFrontLeft.setModule(FLangle, FLspeed * .89);
 		modFrontRight.setModule(FRangle, FRspeed);
-		modBackLeft.setModule(BLangle, BLspeed * .93);
+		modBackLeft.setModule(BLangle, BLspeed * .89);
 		modBackRight.setModule(BRangle, BRspeed);
 	}
 
