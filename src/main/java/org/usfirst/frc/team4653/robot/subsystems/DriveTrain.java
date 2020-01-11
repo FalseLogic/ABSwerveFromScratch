@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
 import org.usfirst.frc.team4653.robot.Constants.Location;
-import org.usfirst.frc.team4653.robot.commands.SwerveDrive;
 import org.usfirst.frc.team4653.robot.swerve.SwerveModule;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -97,21 +96,17 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed) {
-		swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, false, false);
+		swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, true);
 	}
 
-	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed, boolean isFieldOriented, boolean isBackwards) {
+	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed, boolean isFieldOriented) {
 
 		double gyroAngle = Robot.oi.getGyroDegrees();
 
 		double sin = Math.sin(Math.toRadians(gyroAngle));
 		double cos = Math.cos(Math.toRadians(gyroAngle));
 
-		if(isBackwards) {
-			forwardSpeed *= -1;
-			strafeSpeed *= -1;
-		}
-		else if(isFieldOriented) {
+		if(isFieldOriented) {
 			double T = (forwardSpeed * cos) + (strafeSpeed * sin);
 			strafeSpeed = (-forwardSpeed * sin) + (strafeSpeed * cos);
 			forwardSpeed = T;
@@ -216,13 +211,6 @@ public class DriveTrain extends Subsystem {
 		System.out.print(modBackLeft.getTurnAdjPosition() + " ");
 		System.out.println(modBackRight.getTurnAdjPosition());
 	}
-
-	public void printTurnVelocity() {
-		System.out.print(modFrontLeft.getTurnVelocity() + " ");
-		System.out.print(modFrontRight.getTurnVelocity() + " ");
-		System.out.print(modBackLeft.getTurnVelocity() + " ");
-		System.out.println(modBackRight.getTurnVelocity());
-	}
 	
 	public void setAllTurnPID(double kP, double kI, double kD) {
 		modFrontLeft.setTurnPID(kP, kI, kD);
@@ -232,7 +220,6 @@ public class DriveTrain extends Subsystem {
 	}
 
     public void initDefaultCommand() {
-		setDefaultCommand(new SwerveDrive());
 	}
 	
 }

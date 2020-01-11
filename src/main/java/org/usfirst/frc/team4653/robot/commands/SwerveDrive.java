@@ -32,10 +32,10 @@ public class SwerveDrive extends Command {
 			Robot.driveTrain.fullStop();
 		}
 		else if(Robot.oi.leftStick.getRawButton(1)) {
-			Robot.driveTrain.swerveDrive(filter(forwardSpeed), filter(strafeSpeed), filter(rotateSpeed), false, false);
+			Robot.driveTrain.swerveDrive(filter(forwardSpeed), filter(strafeSpeed), filter(rotateSpeed), false);
 		}
 		else {
-			Robot.driveTrain.swerveDrive(filter(forwardSpeed), filter(strafeSpeed), filter(rotateSpeed), true, false);
+			Robot.driveTrain.swerveDrive(filter(forwardSpeed), filter(strafeSpeed), filter(rotateSpeed), true);
 		}
 
     }

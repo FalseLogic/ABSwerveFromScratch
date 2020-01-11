@@ -63,7 +63,7 @@ public class OI {
 	}
 
 	private double filter(double a) {
-		if(Math.abs(a) < .1) {
+		if(Math.abs(a) < .02) {
 			return 0;
 		}
 		return a;

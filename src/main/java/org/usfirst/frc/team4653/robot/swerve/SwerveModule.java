@@ -12,8 +12,8 @@ import org.usfirst.frc.team4653.robot.Constants;
 
 public class SwerveModule {
 
-	public WPI_TalonSRX turn;
-	public CANSparkMax drive;
+	private WPI_TalonSRX turn;
+	private CANSparkMax drive;
 
 	private boolean isReversed;
 	private double offset;
@@ -32,12 +32,11 @@ public class SwerveModule {
 		this.offset = offset;
 		this.isReversed = isReversed;
 
-		turn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Constants.SRX_PIDLOOPIDX, Constants.SRX_TIMEOUT_MS);
+		turn.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition, Constants.SRX_PIDLOOPIDX, Constants.SRX_TIMEOUT_MS);
 		turn.config_kP(Constants.SRX_PIDLOOPIDX, Constants.SWERVE_P_GAIN);
 		turn.config_kI(Constants.SRX_PIDLOOPIDX, Constants.SWERVE_I_GAIN);
 		turn.config_kD(Constants.SRX_PIDLOOPIDX, Constants.SWERVE_D_GAIN);
 		turn.setNeutralMode(NeutralMode.Brake);
-
 	}
 
 	public WPI_TalonSRX getTurnController() {
@@ -46,26 +45,6 @@ public class SwerveModule {
 
 	public CANSparkMax getDriveController() {
 		return drive;
-	}
-
-	public void oldTurnMotorControl(double targetAngle) {
-
-		double turnMotorPower, amtOff, targetPos;
-
-		targetPos = (targetAngle * fullRot / 360);
-		amtOff = getTurnAdjPosition() - targetPos;
-		
-		turnMotorPower = (-amtOff/fullRot) + Math.floor((amtOff + (fullRot / 2)) / fullRot);
-		
-		turnMotorPower += Math.copySign(.05, turnMotorPower);
-		
-		if(Math.abs(turnMotorPower) > .06) {
-			turn.set(ControlMode.PercentOutput, turnMotorPower);
-		}
-		else {
-			turn.set(ControlMode.PercentOutput, 0);
-		}
-		
 	}
 	
 	public void spinWheel(double speed) {
@@ -103,8 +82,6 @@ public class SwerveModule {
 		}
 
 		turn.set(ControlMode.Position, getTurnRawPosition() + (error * fullRot / 360));
-		//drive.set(speed);
-		//turnMotorControl(targetAngle);
 		spinWheel(speed);
 	}
 	
@@ -114,14 +91,6 @@ public class SwerveModule {
 
 	public double getTurnAdjPosition() {
 		return turn.getSelectedSensorPosition(Constants.SRX_PIDLOOPIDX) - offset;
-	}
-
-	//public double getTurnErrorDegrees() {
-	//	return getTurnRawDegrees() - targetAngle;
-	//}
-
-	public double getTurnVelocity() {
-		return turn.getSensorCollection().getQuadratureVelocity();
 	}
 
 	public double getTurnDegrees() {
