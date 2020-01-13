@@ -4,76 +4,30 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
-import org.usfirst.frc.team4653.robot.Constants.Location;
 import org.usfirst.frc.team4653.robot.swerve.SwerveModule;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class DriveTrain extends Subsystem {
+//The drive train subsystem, which handles driving calculations and gives modules commands
+//Consists of four SwerveModules
+public class Drivetrain extends SubsystemBase {
 	
-	private SwerveModule modFrontLeft;
-	private SwerveModule modFrontRight;
-	private SwerveModule modBackLeft;
-	private SwerveModule modBackRight;
+	private final SwerveModule modFrontLeft;
+	private final SwerveModule modFrontRight;
+	private final SwerveModule modBackLeft;
+	private final SwerveModule modBackRight;
 	
-	public DriveTrain() {
+	//This set of inversions works when all of the wide parts of the modules begin facing inwards
+	//Invert accordingly to have them all face out/to one side.
+	public Drivetrain() {
 		modFrontLeft = new SwerveModule(Constants.FL_TURN_PORT, Constants.FL_DRIVE_PORT, Constants.FL_OFFSET, true);
 		modFrontRight = new SwerveModule(Constants.FR_TURN_PORT, Constants.FR_DRIVE_PORT, Constants.FR_OFFSET, false);
 		modBackLeft = new SwerveModule(Constants.BL_TURN_PORT, Constants.BL_DRIVE_PORT, Constants.BL_OFFSET, true);
 		modBackRight = new SwerveModule(Constants.BR_TURN_PORT, Constants.BR_DRIVE_PORT, Constants.BR_OFFSET, false);
 	}
-
-	public void newOffsets() {
-		modFrontLeft.newOffset();
-		modFrontRight.newOffset();
-		modBackLeft.newOffset();
-		modBackRight.newOffset();
-	}
-
-	public void setModule(Location location, double targetAngle, double power) {
-		switch(location) {
-			default:
-			case FRONT_LEFT:
-				modFrontLeft.setModule(targetAngle, power);
-			case FRONT_RIGHT:
-				modFrontRight.setModule(targetAngle, power);
-			case BACK_LEFT:
-				modBackLeft.setModule(targetAngle, power);
-			case BACK_RIGHT:
-				modBackRight.setModule(targetAngle, power);
-		}
-	}
 	
-	public SwerveModule getSwerveModule(Location location) {
-		switch(location) {
-			default:
-				return null;
-			case FRONT_LEFT:
-				return modFrontLeft;
-			case FRONT_RIGHT:
-				return modFrontRight;
-			case BACK_LEFT:
-				return modBackLeft;
-			case BACK_RIGHT:
-				return modBackRight;
-
-		}
-	}
-
-	//public void setAllAngle(double targetAngle) {
-	//	modFrontLeft.turnMotorControl(targetAngle);
-	//	modFrontRight.turnMotorControl(targetAngle);
-	//	modBackLeft.turnMotorControl(targetAngle);
-	//	modBackRight.turnMotorControl(targetAngle);
-	//}
-	
-	public void setAllSpeed(double power) {
-		modFrontLeft.spinWheel(power);
-		modFrontRight.spinWheel(power);
-		modBackLeft.spinWheel(power);
-		modBackRight.spinWheel(power);
-	}
-	
+	//Crab drive - sets all motors to the same angle and speed
+	//Basically swerve drive without rotation
 	public void crabDrive(double angle, double speed) {
 		modFrontLeft.setModule(angle, speed);
 		modFrontRight.setModule(angle, speed);
@@ -81,13 +35,14 @@ public class DriveTrain extends Subsystem {
 		modBackRight.setModule(angle, speed);
 	}
 
+	//A couple of methods that work like regular tank drives
+	//Not particularly useful
 	public void tankDrive(double left, double right) {
 		modFrontLeft.setModule(0, left);
 		modFrontRight.setModule(0, right);
 		modBackLeft.setModule(0, left);
 		modBackRight.setModule(0, right);
 	}
-
 	public void arcadeDrive(double power, double turn) {
 		modFrontLeft.setModule(0, power + turn);
 		modFrontRight.setModule(0, power - turn);
@@ -95,13 +50,15 @@ public class DriveTrain extends Subsystem {
 		modBackRight.setModule(0, power - turn);
 	}
 
+	//Default swerve drive is field oriented
 	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed) {
 		swerveDrive(forwardSpeed, strafeSpeed, rotateSpeed, true);
 	}
-
+	//Swerve drive - takes forward, sideways, and rotational speeds, and does calculations to make the robot move
+	//Allows for field/robot orientation
 	public void swerveDrive(double forwardSpeed, double strafeSpeed, double rotateSpeed, boolean isFieldOriented) {
 
-		double gyroAngle = Robot.oi.getGyroDegrees();
+		double gyroAngle = Robot.ahrs.getAngle();
 
 		double sin = Math.sin(Math.toRadians(gyroAngle));
 		double cos = Math.cos(Math.toRadians(gyroAngle));
@@ -139,6 +96,7 @@ public class DriveTrain extends Subsystem {
 		modBackRight.setModule(BRangle, BRspeed);
 	}
 
+	//Stops ALL motors from moving
 	public void fullStop() {
 		modFrontLeft.getDriveController().set(0);
 		modFrontRight.getDriveController().set(0);
@@ -151,34 +109,23 @@ public class DriveTrain extends Subsystem {
 		modBackRight.getTurnController().set(ControlMode.PercentOutput, 0);
 	}
 
+	//Resets all turn encoders - see SwerveModule.newOffset()
+	public void newOffsets() {
+		modFrontLeft.newOffset();
+		modFrontRight.newOffset();
+		modBackLeft.newOffset();
+		modBackRight.newOffset();
+	}
+	//Resets all drive encoders
 	public void resetDriveEncoders() {
 		modFrontLeft.resetDriveEncoder();
 		modFrontRight.resetDriveEncoder();
 		modBackLeft.resetDriveEncoder();
 		modBackRight.resetDriveEncoder();
 	}
-
-	public void resetTurnEncoders() {
-		modFrontLeft.resetTurnEncoder();
-		modFrontRight.resetTurnEncoder();
-		modBackLeft.resetTurnEncoder();
-		modBackRight.resetTurnEncoder();
-	}
 	
-	public void printDriveVelocity() {
-		System.out.print(modFrontLeft.getDriveVelocity() + " ");
-		System.out.print(modFrontRight.getDriveVelocity() + " ");
-		System.out.print(modBackLeft.getDriveVelocity() + " ");
-		System.out.println(modBackRight.getDriveVelocity());
-	}
-
-	public void printDriveRawPosition() {
-		System.out.print(modFrontLeft.getDriveRawPosition() + " ");
-		System.out.print(modFrontRight.getDriveRawPosition() + " ");
-		System.out.print(modBackLeft.getDriveRawPosition() + " ");
-		System.out.println(modBackRight.getDriveRawPosition());
-	}
-	
+	//Average position of all drive encoders
+	//Use carefully - will not necessarily be distance travelled, as some modules might turn different ways than others
 	public double averageDrivePosition() {
 
 		double sum = 0;
@@ -197,21 +144,9 @@ public class DriveTrain extends Subsystem {
 
 		return sum / 4;
 	}
-
-	public void printRawTurnEnc() {
-		System.out.print(modFrontLeft.getTurnRawPosition() + " ");
-		System.out.print(modFrontRight.getTurnRawPosition() + " ");
-		System.out.print(modBackLeft.getTurnRawPosition() + " ");
-		System.out.println(modBackRight.getTurnRawPosition());
-	}
-
-	public void printAdjTurnEnc() {
-		System.out.print(modFrontLeft.getTurnAdjPosition() + " ");
-		System.out.print(modFrontRight.getTurnAdjPosition() + " ");
-		System.out.print(modBackLeft.getTurnAdjPosition() + " ");
-		System.out.println(modBackRight.getTurnAdjPosition());
-	}
 	
+	//Sets PID gains of all modules
+	//Individual tuning is recommended
 	public void setAllTurnPID(double kP, double kI, double kD) {
 		modFrontLeft.setTurnPID(kP, kI, kD);
 		modFrontRight.setTurnPID(kP, kI, kD);

@@ -1,60 +1,31 @@
 package org.usfirst.frc.team4653.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.kauailabs.navx.frc.AHRS;
 
-import org.usfirst.frc.team4653.robot.Constants.Location;
-import org.usfirst.frc.team4653.robot.OI.Stick;
-import org.usfirst.frc.team4653.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team4653.robot.commands.SwerveDrive;
+import org.usfirst.frc.team4653.robot.subsystems.Drivetrain;
 
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Scheduler;
 
+//This project uses commands/subsystems, but not the entire WPILib "Command Based" structure
+//You may want to follow the documentation and create a RobotContainer, following their directions
+//On the other hand, command based may not be useful for any given robot
 public class Robot extends TimedRobot {
-	
-	public static DriveTrain driveTrain;
-	public static OI oi;
+
+	public static Drivetrain drivetrain;
+	public static Joystick stick;
+	public static AHRS ahrs;
 
 	@Override
 	public void robotInit() {
-		driveTrain = new DriveTrain();
-		oi = new OI();
+		drivetrain = new Drivetrain();
+		stick = new Joystick(Constants.STICK_PORT);
+		ahrs = new AHRS(SPI.Port.kMXP);
 
-		oi.resetGyro();
-	}
-
-	@Override
-	public void autonomousInit() {
-		//driveTrain.newOffsets();
-		oi.resetGyro();
-	}
-
-	@Override
-	public void autonomousPeriodic() {
-		driveTrain.swerveDrive(.1, -.075, .35);
-	}
-	
-
-	@Override
-	public void teleopInit() {
-	}
-
-	@Override
-	public void teleopPeriodic() {
-		Scheduler.getInstance().run();
-
-		//driveTrain.printRawTurnEnc();
-		driveTrain.printAdjTurnEnc();
-
-		if(oi.leftStick.getRawButtonPressed(7)) {
-			oi.resetGyro();
-		}
-
-		
-	}
-
-	@Override
-	public void disabledInit() {
-		Scheduler.getInstance().removeAll();
+		//Sets swerve drive to run in the background
+		drivetrain.setDefaultCommand(new SwerveDrive(true));
 	}
 
 }

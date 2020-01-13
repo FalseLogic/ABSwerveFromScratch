@@ -1,5 +1,8 @@
 package org.usfirst.frc.team4653.robot;
 
+//Every constant the robot uses, in one package.
+//You can nest classes here to organize the data better, if you want.
+//Make sure you name the constants so that you know what they are by looking at them
 public class Constants {
 
 	//CAN IDs
@@ -12,15 +15,12 @@ public class Constants {
 			  				BR_DRIVE_PORT = 4,
 			 				BR_TURN_PORT = 8;
 
-	public static final int FL_OFFSET = -777,
-			  				FR_OFFSET = 234,
-							BL_OFFSET = 314,
-			  				BR_OFFSET = -69;
+	public static final int FL_OFFSET = 0,
+			  				FR_OFFSET = 0,
+							BL_OFFSET = 0,
+			  				BR_OFFSET = 0;
 
-	public static final int LEFT_STICK_PORT = 1,
-							RIGHT_STICK_PORT = 2,
-							XBOX_PORT = 0,
-							VJOY_PORT = 4,
+	public static final int STICK_PORT = 1,
 							SRX_TIMEOUT_MS = 10,
 							SRX_PIDLOOPIDX = 0;
 	
@@ -28,12 +28,18 @@ public class Constants {
 							   SWERVE_I_GAIN = 0,
 							   SWERVE_D_GAIN = 49.5;
 
+	//Some physical dimensions of the robot for swerve calculations
 	public static final double WHEELBASE_INCHES = 19.5,
 							   TRACKWIDTH_INCHES = 28.0,
-							   TURN_RADIUS_INCHES = Math.hypot(WHEELBASE_INCHES, TRACKWIDTH_INCHES);
-			
-	public enum Location {
-        FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT;
+							   TURN_RADIUS_INCHES = Math.hypot(WHEELBASE_INCHES, TRACKWIDTH_INCHES),
+							   MODULE_FULL_ROTATION = 4096 / 1.2;
+
+	//This basic function can be used to filter noise out of a joystick input
+	public static double filter(double a) {
+		if(Math.abs(a) < .02) {
+			return 0;
+		}
+		return a;
 	}
 	
 }

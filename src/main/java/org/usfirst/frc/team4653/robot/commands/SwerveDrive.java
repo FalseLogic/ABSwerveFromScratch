@@ -1,60 +1,48 @@
 package org.usfirst.frc.team4653.robot.commands;
 
+import org.usfirst.frc.team4653.robot.subsystems.Drivetrain;
+
+import org.usfirst.frc.team4653.robot.Constants;
 import org.usfirst.frc.team4653.robot.Robot;
-import org.usfirst.frc.team4653.robot.OI.Stick;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class SwerveDrive extends Command {
+//The command running swerve drive using a single stick
+public class SwerveDrive extends CommandBase {
+	
+	private final Drivetrain drivetrain;
+	private final Joystick stick;
+	private final boolean isFieldOriented;
 
-    boolean isFieldOriented, canRotate;
-
-    public SwerveDrive() {
-        requires(Robot.driveTrain);
+    public SwerveDrive(boolean isFieldOriented) {
+		drivetrain = Robot.drivetrain;
+		stick = Robot.stick;
+		this.isFieldOriented = isFieldOriented;
+		addRequirements(drivetrain);
     }
 
-    protected void initialize() {
+    public void initialize() {
     }
 
-    protected void execute() {
+    public void execute() {
 
-		canRotate = true;
+		double forwardSpeed = -.5 * stick.getY();
+		double strafeSpeed = .5 * stick.getX();
+		double rotateSpeed = .4 * stick.getZ();
 
-		isFieldOriented = false;
-
-
-		double forwardSpeed = .45 * -Robot.oi.getStickY(Stick.LEFT);
-		double strafeSpeed = .45 * Robot.oi.getStickX(Stick.LEFT);
-		double rotateSpeed = .375 * Robot.oi.getStickZ(Stick.LEFT);
-		if(!canRotate) rotateSpeed = 0;
-		
-		if(Robot.oi.leftStick.getRawButton(2)) {
-			Robot.driveTrain.fullStop();
-		}
-		else if(Robot.oi.leftStick.getRawButton(1)) {
-			Robot.driveTrain.swerveDrive(filter(forwardSpeed), filter(strafeSpeed), filter(rotateSpeed), false);
-		}
-		else {
-			Robot.driveTrain.swerveDrive(filter(forwardSpeed), filter(strafeSpeed), filter(rotateSpeed), true);
-		}
+		drivetrain.swerveDrive(Constants.filter(forwardSpeed), Constants.filter(strafeSpeed), Constants.filter(rotateSpeed), isFieldOriented);
 
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
-    protected void end() {
+    public void end() {
     }
 
-    protected void interrupted() {
+    public void interrupted() {
 	}
 	
-	private double filter(double a) {
-		if(Math.abs(a) < .1) {
-			return 0;
-		}
-		return a;
-	}
-
 }

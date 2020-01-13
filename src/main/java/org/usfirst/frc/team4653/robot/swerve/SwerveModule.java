@@ -3,52 +3,46 @@ package org.usfirst.frc.team4653.robot.swerve;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.usfirst.frc.team4653.robot.Constants;
 
-
+//An individual module for swerve drive, can turn the wheel to certain angles at certan speeds
+//Consists of a Talon SRX for the turn motor, and a Spark MAX for the drive motor
 public class SwerveModule {
 
-	private WPI_TalonSRX turn;
-	private CANSparkMax drive;
+	private final WPI_TalonSRX turn;
+	private final CANSparkMax drive;
 
-	private boolean isReversed;
+	private boolean isInverted;
 	private double offset;
-
-	double fullRot = 4096 / 1.2;
 
 	/**
      * @param turnID   		the ID of the turn motor
      * @param driveID       the ID of the drive motor
-     * @param isReversed    if the module is physically reversed on the robot
+     * @param isInverted    if the module is physically reversed on the robot
      * @param offset		encoder value when wheel is pointing stright
      */
-	public SwerveModule(int turnID, int driveID, double offset, boolean isReversed) {
+	public SwerveModule(int turnID, int driveID, double offset, boolean isInverted) {
 		turn = new WPI_TalonSRX(turnID);
 		drive = new CANSparkMax(driveID, MotorType.kBrushless);
 		this.offset = offset;
-		this.isReversed = isReversed;
+		this.isInverted = isInverted;
 
+		turn.configFactoryDefault();
 		turn.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition, Constants.SRX_PIDLOOPIDX, Constants.SRX_TIMEOUT_MS);
 		turn.config_kP(Constants.SRX_PIDLOOPIDX, Constants.SWERVE_P_GAIN);
 		turn.config_kI(Constants.SRX_PIDLOOPIDX, Constants.SWERVE_I_GAIN);
 		turn.config_kD(Constants.SRX_PIDLOOPIDX, Constants.SWERVE_D_GAIN);
 		turn.setNeutralMode(NeutralMode.Brake);
 	}
-
-	public WPI_TalonSRX getTurnController() {
-		return turn;
-	}
-
-	public CANSparkMax getDriveController() {
-		return drive;
-	}
 	
+	//Wheel spins in reverse if the module is reversed
 	public void spinWheel(double speed) {
-		if(isReversed) {
+		if(isInverted) {
 			drive.set(-speed);
 		}
 		else {
@@ -56,6 +50,9 @@ public class SwerveModule {
 		}
 	}
 
+	//Main function to set a module
+	//targetAngle is in degrees - 0 is forward
+	//targetSpeed is from -1.0 to 1.0
 	public void setModule(double targetAngle, double targetSpeed) {
 
 		double target, current, speed;
@@ -64,6 +61,8 @@ public class SwerveModule {
 		current = getTurnDegrees();
 		speed = targetSpeed;
 
+		//Most of this is optimizing the movement of the turn motor -
+		//Sometimes you will want to reverse the drive motor instead of turning another 180 degrees
 		while(current > 180) current -= 360;
 		while(current < -180) current += 360;
 
@@ -81,52 +80,64 @@ public class SwerveModule {
 			speed *= -1;
 		}
 
-		turn.set(ControlMode.Position, getTurnRawPosition() + (error * fullRot / 360));
+		//Gives the target position to the built-in PID controller on the Talon SRX
+		turn.set(ControlMode.Position, getTurnRawPosition() + (error * Constants.MODULE_FULL_ROTATION / 360));
+		//May want to use a velocity PID instead of raw voltage, but this is perfectly fine for now
 		spinWheel(speed);
 	}
 	
+	//The raw encoder position of the turn motor
 	public double getTurnRawPosition() {
 		return turn.getSelectedSensorPosition(Constants.SRX_PIDLOOPIDX);
 	}
-
+	//Turn encoder adjusted with given offset
 	public double getTurnAdjPosition() {
-		return turn.getSelectedSensorPosition(Constants.SRX_PIDLOOPIDX) - offset;
+		return getTurnRawPosition() - offset;
 	}
-
+	//Converted to degrees from encoder ticks
 	public double getTurnDegrees() {
-		return getTurnAdjPosition() / fullRot * 360;
+		return getTurnAdjPosition() / Constants.MODULE_FULL_ROTATION * 360;
 	}
 
+	//The raw encoder position of the drive motor
 	public double getDriveRawPosition() {
 		return drive.getEncoder().getPosition();
 	}
+	//The raw encoder velocity of the turn motor
 	public double getDriveVelocity() {
 		return drive.getEncoder().getVelocity();
 	}
-	public void resetTurnEncoder() {
-		//turn.getSensorCollection().setQuadraturePosition(0, Constants.SRX_TIMEOUT_MS);
-		turn.setSelectedSensorPosition(0);
+
+
+	//Re-offsets the turn encoder - useful if you want to recenter at the beginning of a match
+	//Basically works like resetting the encoder
+	public void newOffset() {
+		this.offset = getTurnRawPosition();
 	}
+	//Resets the drive encoder
 	public void resetDriveEncoder() {
 		drive.getEncoder().setPosition(0);
 	}
 
-	public void setOffset(double offset) {
-		this.offset = offset;
-	}
-
-	public void newOffset() {
-		this.offset = getTurnRawPosition();
-	}
 	
+	
+	//Sets PID gains for turn motor
 	public void setTurnPID(double kP, double kI, double kD) {
 		turn.config_kP(Constants.SRX_PIDLOOPIDX, kP);
 		turn.config_kI(Constants.SRX_PIDLOOPIDX, kI);
 		turn.config_kD(Constants.SRX_PIDLOOPIDX, kD);
 	}
 
+	//Returns true if the drive motor is inverted
 	public boolean isInverted() {
-		return isReversed;
+		return isInverted;
+	}
+
+	public TalonSRX getTurnController() {
+		return turn;
+	}
+	public CANSparkMax getDriveController() {
+		return drive;
 	}
 	
 }
